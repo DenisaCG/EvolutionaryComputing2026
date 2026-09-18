@@ -1,0 +1,16 @@
+condition,seed,evals_to_reach_13.804
+mutation_only,0,1300
+mutation_only,1,1600
+mutation_only,2,3600
+mutation_only,3,1100
+mutation_only,4,1800
+mutation_crossover,0,1500
+mutation_crossover,1,1800
+mutation_crossover,2,2700
+mutation_crossover,3,1500
+mutation_crossover,4,3300
+random_search,0,
+random_search,1,
+random_search,2,
+random_search,3,
+random_search,4,
