@@ -56,7 +56,13 @@ COLORS: dict[str, str] = {
 
 
 def ea_generation_stats(variant: str, seed: int) -> dict[str, list[float]]:
-    """Per-generation cumulative evals, population mean/std, and best-so-far."""
+    """Per-generation cumulative evals, population best/mean/worst/std, best-so-far.
+
+    `pop_best`/`pop_worst` are this generation's own extremes, which the
+    assignment template asks for. `best_so_far` is the cumulative running
+    minimum: it only ever improves, so on its own it cannot show whether the
+    population is still making progress.
+    """
     db_path = DATA_DIR / "ea" / variant / f"seed_{seed}" / "database.db"
     con = sqlite3.connect(db_path.resolve().as_uri() + "?mode=ro", uri=True)
     rows = con.execute(
@@ -74,6 +80,7 @@ def ea_generation_stats(variant: str, seed: int) -> dict[str, list[float]]:
     ):
         raise ValueError(f"Incomplete or invalid run: {db_path}")
     cumulative_evals, pop_mean, pop_std, best_so_far = [], [], [], []
+    pop_best, pop_worst = [], []
     running_best = float("inf")
     for gen in sorted(by_gen):
         fits = by_gen[gen]
@@ -81,11 +88,16 @@ def ea_generation_stats(variant: str, seed: int) -> dict[str, list[float]]:
         cumulative_evals.append((gen + 1) * len(fits))
         pop_mean.append(float(np.mean(fits)))
         pop_std.append(float(np.std(fits)))
+        # Minimisation: the best individual is the lowest-fitness one.
+        pop_best.append(float(np.min(fits)))
+        pop_worst.append(float(np.max(fits)))
         best_so_far.append(running_best)
     return {
         "cumulative_evals": cumulative_evals,
         "pop_mean": pop_mean,
         "pop_std": pop_std,
+        "pop_best": pop_best,
+        "pop_worst": pop_worst,
         "best_so_far": best_so_far,
     }
 
@@ -104,6 +116,7 @@ def random_search_generation_stats(seed: int) -> dict[str, list[float]]:
         raise ValueError(f"Incomplete or invalid random-search run: {path}")
 
     cumulative_evals, pop_mean, pop_std, best_so_far = [], [], [], []
+    pop_best, pop_worst = [], []
     running_best = float("inf")
     for gen in CHECKPOINTS:
         batch = fitness[gen * POP_SIZE : (gen + 1) * POP_SIZE]
@@ -113,11 +126,16 @@ def random_search_generation_stats(seed: int) -> dict[str, list[float]]:
         cumulative_evals.append((gen + 1) * len(batch))
         pop_mean.append(float(np.mean(batch)))
         pop_std.append(float(np.std(batch)))
+        # Minimisation: the best draw in this batch is the lowest-fitness one.
+        pop_best.append(float(np.min(batch)))
+        pop_worst.append(float(np.max(batch)))
         best_so_far.append(running_best)
     return {
         "cumulative_evals": cumulative_evals,
         "pop_mean": pop_mean,
         "pop_std": pop_std,
+        "pop_best": pop_best,
+        "pop_worst": pop_worst,
         "best_so_far": best_so_far,
     }
 
@@ -354,6 +372,158 @@ def plot_tree_size() -> None:
     fig.savefig(PLOTS_DIR / "tree_size_plot.png", dpi=200)
 
 
+def plot_best_mean_worst(
+    per_seed: dict[str, dict[int, dict[str, list[float]]]],
+) -> None:
+    """Per-generation best / mean / worst fitness, one panel per EA condition.
+
+    This is the best/mean/worst trace the assignment template asks for. Random
+    search is excluded: it redraws independently every evaluation, so it has no
+    population to spread.
+
+    Within a panel the three series are an ordered triple (best <= mean <=
+    worst), so vertical position and the direct labels carry identity on their
+    own. Red/green is the classic colour-vision-deficiency collision, so the
+    hues below are the widest-separated passing set (worst CVD pair dE 11.4,
+    normal vision 24.2) and line style backs up every hue.
+    """
+    role_color = {
+        "pop_worst": "#B4400A",  # red
+        "pop_mean": "#E69F00",  # orange
+        "pop_best": "#0072B2",  # blue
+    }
+    fig, axes = plt.subplots(
+        1, len(EA_CONDITIONS), figsize=(11, 4.7), sharey=True,
+    )
+    for ax, condition in zip(np.atleast_1d(axes), EA_CONDITIONS, strict=True):
+        by_seed = per_seed[condition]
+        evals = np.array(by_seed[SEEDS[0]]["cumulative_evals"])
+        series = {
+            key: np.array([by_seed[seed][key] for seed in SEEDS]).mean(axis=0)
+            for key in ("pop_best", "pop_mean", "pop_worst")
+        }
+
+        # Neutral band so the three role colours are the only hues competing.
+        ax.fill_between(
+            evals, series["pop_best"], series["pop_worst"],
+            color="#6E6E6E", alpha=0.28, linewidth=0,
+        )
+        for key, style, width in (
+            ("pop_worst", (0, (4, 2)), 2.0),
+            ("pop_mean", "solid", 2.0),
+            ("pop_best", (0, (1, 1.4)), 2.0),
+        ):
+            ax.plot(
+                evals, series[key], color=role_color[key],
+                linestyle=style, linewidth=width,
+                # Line style backs up every hue, so the legend never relies on
+                # colour alone to tell the three apart.
+                label=key.removeprefix("pop_").capitalize(),
+            )
+
+        ax.set_title(LABELS[condition])
+        ax.set_xlabel("Cumulative fitness evaluations")
+        ax.grid(color="#dddddd", linewidth=0.8)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+
+    np.atleast_1d(axes)[0].set_ylabel("Population fitness")
+    legend = np.atleast_1d(axes)[-1].legend(
+        loc="upper right", frameon=True, framealpha=0.95,
+        facecolor="white", edgecolor="#cccccc",
+    )
+    legend.get_frame().set_linewidth(0.8)
+    fig.suptitle("Population analysis per generation")
+    fig.tight_layout()
+    fig.savefig(PLOTS_DIR / "best_mean_worst_plot.png", dpi=200)
+    plt.close(fig)
+
+
+def plot_best_so_far_vs_generation_best(
+    per_seed: dict[str, dict[int, dict[str, list[float]]]],
+) -> None:
+    """Contrast the cumulative best-so-far ratchet with each generation's own best.
+
+    `best_so_far` is a running minimum, so it can only ever descend and will
+    look like steady convergence regardless of what the population does. The
+    per-generation best is free to move both ways, and the gap between the two
+    is how much of the apparent progress the EA is not holding on to.
+    """
+    letters = [chr(ord("A") + i) for i in range(len(EA_CONDITIONS))]
+    fig, axes = plt.subplots(
+        1, len(EA_CONDITIONS), figsize=(11, 4.5), sharey=True,
+    )
+    for ax, condition, letter in zip(
+        np.atleast_1d(axes), EA_CONDITIONS, letters, strict=True,
+    ):
+        by_seed = per_seed[condition]
+        evals = np.array(by_seed[SEEDS[0]]["cumulative_evals"])
+        gen_best = np.array(
+            [by_seed[seed]["pop_best"] for seed in SEEDS],
+        ).mean(axis=0)
+        ratchet = np.array(
+            [by_seed[seed]["best_so_far"] for seed in SEEDS],
+        ).mean(axis=0)
+        color = COLORS[condition]
+
+        # Where the search actually does its work: the first checkpoint holding
+        # 80% of the run's total improvement. Everything right of it is tail.
+        total_gain = gen_best[0] - gen_best[-1]
+        early = int(np.argmax((gen_best[0] - gen_best) >= 0.8 * total_gain))
+        ax.axvspan(evals[0], evals[early], color="#6E6E6E", alpha=0.13, linewidth=0)
+        ax.axvline(
+            evals[early], color="#6E6E6E", linestyle=(0, (3, 3)), linewidth=1.2,
+        )
+
+        ax.fill_between(
+            evals, ratchet, gen_best, color=color, alpha=0.18, linewidth=0,
+        )
+        ax.plot(evals, gen_best, color=color, linewidth=2)
+        ax.plot(
+            evals, ratchet, color="#333333", linewidth=2, linestyle=(0, (4, 2)),
+        )
+        # Mark where the averaged per-generation best actually got worse.
+        worse = np.flatnonzero(np.diff(gen_best) > 0) + 1
+        ax.plot(
+            evals[worse], gen_best[worse], linestyle="none", marker="o",
+            markersize=5, markerfacecolor="white", markeredgecolor=color,
+            markeredgewidth=1.5,
+        )
+
+        ax.set_title(f"{LABELS[condition]} ({letter})")
+        ax.set_xlabel("Evaluations")
+        ax.grid(color="#dddddd", linewidth=0.8)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+
+    np.atleast_1d(axes)[0].set_ylabel("Fitness")
+    # One legend for both panels, so each condition's colour is named once.
+    handles = [
+        plt.Line2D([], [], color=COLORS[c], linewidth=2,
+                   label=f"Generation best ({letter})")
+        for c, letter in zip(EA_CONDITIONS, letters, strict=True)
+    ]
+    handles.append(
+        plt.Line2D([], [], color="#333333", linewidth=2, linestyle=(0, (4, 2)),
+                   label="Best-so-far"),
+    )
+    handles += [
+        plt.Line2D([], [], linestyle="none", marker="o", markersize=5,
+                   markerfacecolor="white", markeredgecolor=COLORS[c],
+                   markeredgewidth=1.5, label=f"Got worse ({letter})")
+        for c, letter in zip(EA_CONDITIONS, letters, strict=True)
+    ]
+    legend = np.atleast_1d(axes)[-1].legend(
+        handles=handles, loc="upper right", frameon=True, framealpha=0.95,
+        facecolor="white", edgecolor="#cccccc", fontsize=9,
+    )
+    legend.get_frame().set_linewidth(0.8)
+    fig.suptitle("Generational fitness analysis")
+    fig.tight_layout()
+    fig.savefig(PLOTS_DIR / "best_so_far_vs_generation_best.png", dpi=200)
+    plt.close(fig)
+
+
 def main(argv: list[str] | None = None) -> None:
     global EA_CONDITIONS, RANDOM_SEARCH_FOLDER, SEEDS, CHECKPOINTS
     global RESULTS_DIR, PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR, POP_SIZE, NUM_GENERATIONS
@@ -372,7 +542,7 @@ def main(argv: list[str] | None = None) -> None:
         PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR = (RESULTS_DIR / p for p in ("plots", "tables", "manifests"))
         LABELS.update(dynamic_constant="Constant mutation EA",
                       dynamic_exponential="Exponential mutation EA")
-        COLORS.update(dynamic_constant="#0072B2", dynamic_exponential="#D55E00")
+        COLORS.update(dynamic_constant="#009E73", dynamic_exponential="#7B3294")
         # Use recorded probabilities, not a schedule reconstructed from possibly changed code.
         reference = None
         for seed in SEEDS:
@@ -447,16 +617,21 @@ def main(argv: list[str] | None = None) -> None:
         writer = csv.writer(f)
         writer.writerow([
             "condition", "seed", "generation", "cumulative_evals",
-            "pop_mean_fitness", "pop_std_fitness", "best_so_far",
+            "pop_best_fitness", "pop_mean_fitness", "pop_worst_fitness",
+            "pop_std_fitness", "best_so_far",
         ])
         for condition, by_seed in per_seed.items():
             for seed, stats in by_seed.items():
                 rows = zip(
-                    stats["cumulative_evals"], stats["pop_mean"],
+                    stats["cumulative_evals"], stats["pop_best"],
+                    stats["pop_mean"], stats["pop_worst"],
                     stats["pop_std"], stats["best_so_far"], strict=True,
                 )
-                for gen, (evals, mean_, std_, best) in enumerate(rows):
-                    writer.writerow([condition, seed, gen, evals, mean_, std_, best])
+                for gen, (evals, best_, mean_, worst_, std_, best) in enumerate(rows):
+                    writer.writerow([
+                        condition, seed, gen, evals,
+                        best_, mean_, worst_, std_, best,
+                    ])
 
     # --- across-seed aggregation, per condition per generation --- #
     condition_summary: dict[str, dict[str, list[float]]] = {}
@@ -464,17 +639,26 @@ def main(argv: list[str] | None = None) -> None:
         n_gens = min(len(s["cumulative_evals"]) for s in by_seed.values())
         cumulative_evals = next(iter(by_seed.values()))["cumulative_evals"][:n_gens]
         mean_of_best, std_of_best, mean_of_pop_mean = [], [], []
+        mean_of_pop_best, mean_of_pop_worst = [], []
         for gen in range(n_gens):
             bests = [by_seed[seed]["best_so_far"][gen] for seed in SEEDS]
             means = [by_seed[seed]["pop_mean"][gen] for seed in SEEDS]
             mean_of_best.append(float(np.mean(bests)))
             std_of_best.append(float(np.std(bests)))
             mean_of_pop_mean.append(float(np.mean(means)))
+            mean_of_pop_best.append(
+                float(np.mean([by_seed[seed]["pop_best"][gen] for seed in SEEDS])),
+            )
+            mean_of_pop_worst.append(
+                float(np.mean([by_seed[seed]["pop_worst"][gen] for seed in SEEDS])),
+            )
         condition_summary[condition] = {
             "cumulative_evals": cumulative_evals,
             "mean_best_so_far": mean_of_best,
             "std_best_so_far": std_of_best,
             "mean_pop_mean": mean_of_pop_mean,
+            "mean_pop_best": mean_of_pop_best,
+            "mean_pop_worst": mean_of_pop_worst,
         }
 
     with (TABLES_DIR / "condition_summary.csv").open("w", newline="") as f:
@@ -482,14 +666,18 @@ def main(argv: list[str] | None = None) -> None:
         writer.writerow([
             "condition", "generation", "cumulative_evals",
             "mean_best_so_far", "std_best_so_far", "mean_pop_mean_fitness",
+            "mean_pop_best_fitness", "mean_pop_worst_fitness",
         ])
         for condition, stats in condition_summary.items():
             rows = zip(
                 stats["cumulative_evals"], stats["mean_best_so_far"],
-                stats["std_best_so_far"], stats["mean_pop_mean"], strict=True,
+                stats["std_best_so_far"], stats["mean_pop_mean"],
+                stats["mean_pop_best"], stats["mean_pop_worst"], strict=True,
             )
-            for gen, (evals, mbest, sbest, mmean) in enumerate(rows):
-                writer.writerow([condition, gen, evals, mbest, sbest, mmean])
+            for gen, (evals, mbest, sbest, mmean, mpbest, mpworst) in enumerate(rows):
+                writer.writerow([
+                    condition, gen, evals, mbest, sbest, mmean, mpbest, mpworst,
+                ])
 
     # --- convergence speed: evals to reach within 5% of the best EA result --- #
     final_bests = [
@@ -532,6 +720,8 @@ def main(argv: list[str] | None = None) -> None:
     plot_final_fitness_violin(per_seed)
     per_target_distance_analysis(per_seed)
     plot_tree_size()
+    plot_best_mean_worst(per_seed)
+    plot_best_so_far_vs_generation_best(per_seed)
 
     print(f"wrote plots to {PLOTS_DIR}, tables to {TABLES_DIR}, manifests to {MANIFESTS_DIR}")
 
