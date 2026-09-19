@@ -1,0 +1,506 @@
+{
+  "dynamic_constant": {
+    "best_seed": 12,
+    "genotype": {
+      "nodes": {
+        "0": {
+          "type": "CORE",
+          "rotation": "DEG_0"
+        },
+        "37": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "41": {
+          "type": "BRICK",
+          "rotation": "DEG_90"
+        },
+        "43": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "44": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "47": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "48": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "55": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "66": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "69": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "71": {
+          "type": "BRICK",
+          "rotation": "DEG_90"
+        },
+        "72": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "73": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        }
+      },
+      "edges": [
+        {
+          "parent": 0,
+          "child": 37,
+          "face": "RIGHT"
+        },
+        {
+          "parent": 0,
+          "child": 41,
+          "face": "LEFT"
+        },
+        {
+          "parent": 37,
+          "child": 43,
+          "face": "FRONT"
+        },
+        {
+          "parent": 0,
+          "child": 44,
+          "face": "BACK"
+        },
+        {
+          "parent": 47,
+          "child": 48,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 44,
+          "child": 47,
+          "face": "FRONT"
+        },
+        {
+          "parent": 41,
+          "child": 55,
+          "face": "FRONT"
+        },
+        {
+          "parent": 48,
+          "child": 66,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 47,
+          "child": 69,
+          "face": "FRONT"
+        },
+        {
+          "parent": 71,
+          "child": 72,
+          "face": "FRONT"
+        },
+        {
+          "parent": 0,
+          "child": 71,
+          "face": "FRONT"
+        },
+        {
+          "parent": 44,
+          "child": 73,
+          "face": "BOTTOM"
+        }
+      ]
+    },
+    "closest_target": "target_00",
+    "closest_target_distance": 10.5,
+    "mean_distances": [
+      10.85,
+      11.0,
+      11.425,
+      12.45,
+      13.275
+    ],
+    "std_distances": [
+      0.9886859966642595,
+      0.9874208829065749,
+      0.8104782538723665,
+      0.804673846971554,
+      0.6977642868476432
+    ],
+    "target_names": [
+      "target_00",
+      "target_01",
+      "target_02",
+      "target_03",
+      "target_04"
+    ]
+  },
+  "dynamic_exponential": {
+    "best_seed": 7,
+    "genotype": {
+      "nodes": {
+        "0": {
+          "type": "CORE",
+          "rotation": "DEG_0"
+        },
+        "3": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "26": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "63": {
+          "type": "BRICK",
+          "rotation": "DEG_0"
+        },
+        "64": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "65": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "75": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "82": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "84": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "85": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "86": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "87": {
+          "type": "BRICK",
+          "rotation": "DEG_90"
+        },
+        "88": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        }
+      },
+      "edges": [
+        {
+          "parent": 0,
+          "child": 3,
+          "face": "BACK"
+        },
+        {
+          "parent": 0,
+          "child": 26,
+          "face": "RIGHT"
+        },
+        {
+          "parent": 63,
+          "child": 64,
+          "face": "FRONT"
+        },
+        {
+          "parent": 0,
+          "child": 63,
+          "face": "FRONT"
+        },
+        {
+          "parent": 3,
+          "child": 65,
+          "face": "TOP"
+        },
+        {
+          "parent": 65,
+          "child": 75,
+          "face": "TOP"
+        },
+        {
+          "parent": 26,
+          "child": 82,
+          "face": "FRONT"
+        },
+        {
+          "parent": 3,
+          "child": 84,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 65,
+          "child": 85,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 0,
+          "child": 86,
+          "face": "LEFT"
+        },
+        {
+          "parent": 87,
+          "child": 88,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 86,
+          "child": 87,
+          "face": "FRONT"
+        }
+      ]
+    },
+    "closest_target": "target_00",
+    "closest_target_distance": 10.5,
+    "mean_distances": [
+      10.7,
+      10.9,
+      11.35,
+      12.05,
+      13.5
+    ],
+    "std_distances": [
+      0.9797958971132711,
+      1.1357816691600549,
+      0.6726812023536856,
+      0.9069178573608526,
+      0.7071067811865476
+    ],
+    "target_names": [
+      "target_00",
+      "target_01",
+      "target_02",
+      "target_03",
+      "target_04"
+    ]
+  },
+  "random_search": {
+    "best_seed": 7,
+    "genotype": {
+      "nodes": {
+        "0": {
+          "type": "CORE",
+          "rotation": "DEG_0"
+        },
+        "1": {
+          "type": "BRICK",
+          "rotation": "DEG_0"
+        },
+        "2": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "3": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "4": {
+          "type": "BRICK",
+          "rotation": "DEG_90"
+        },
+        "5": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "6": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "7": {
+          "type": "HINGE",
+          "rotation": "DEG_45"
+        },
+        "8": {
+          "type": "BRICK",
+          "rotation": "DEG_0"
+        },
+        "9": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "10": {
+          "type": "BRICK",
+          "rotation": "DEG_0"
+        },
+        "11": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "12": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "13": {
+          "type": "BRICK",
+          "rotation": "DEG_45"
+        },
+        "14": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "15": {
+          "type": "BRICK",
+          "rotation": "DEG_90"
+        },
+        "16": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        },
+        "17": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "18": {
+          "type": "BRICK",
+          "rotation": "DEG_90"
+        },
+        "19": {
+          "type": "HINGE",
+          "rotation": "DEG_90"
+        },
+        "20": {
+          "type": "HINGE",
+          "rotation": "DEG_0"
+        }
+      },
+      "edges": [
+        {
+          "parent": 0,
+          "child": 1,
+          "face": "BACK"
+        },
+        {
+          "parent": 1,
+          "child": 2,
+          "face": "TOP"
+        },
+        {
+          "parent": 0,
+          "child": 3,
+          "face": "LEFT"
+        },
+        {
+          "parent": 1,
+          "child": 4,
+          "face": "RIGHT"
+        },
+        {
+          "parent": 1,
+          "child": 5,
+          "face": "LEFT"
+        },
+        {
+          "parent": 1,
+          "child": 6,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 6,
+          "child": 7,
+          "face": "FRONT"
+        },
+        {
+          "parent": 3,
+          "child": 8,
+          "face": "FRONT"
+        },
+        {
+          "parent": 4,
+          "child": 9,
+          "face": "TOP"
+        },
+        {
+          "parent": 9,
+          "child": 10,
+          "face": "FRONT"
+        },
+        {
+          "parent": 0,
+          "child": 11,
+          "face": "RIGHT"
+        },
+        {
+          "parent": 10,
+          "child": 12,
+          "face": "LEFT"
+        },
+        {
+          "parent": 10,
+          "child": 13,
+          "face": "FRONT"
+        },
+        {
+          "parent": 12,
+          "child": 14,
+          "face": "BOTTOM"
+        },
+        {
+          "parent": 12,
+          "child": 15,
+          "face": "FRONT"
+        },
+        {
+          "parent": 13,
+          "child": 16,
+          "face": "LEFT"
+        },
+        {
+          "parent": 11,
+          "child": 17,
+          "face": "FRONT"
+        },
+        {
+          "parent": 0,
+          "child": 18,
+          "face": "FRONT"
+        },
+        {
+          "parent": 18,
+          "child": 19,
+          "face": "FRONT"
+        },
+        {
+          "parent": 4,
+          "child": 20,
+          "face": "RIGHT"
+        }
+      ]
+    },
+    "closest_target": "target_00",
+    "closest_target_distance": 14.5,
+    "mean_distances": [
+      16.125,
+      16.1,
+      16.025,
+      16.625,
+      16.875
+    ],
+    "std_distances": [
+      0.6869315832017043,
+      0.874642784226795,
+      0.7822243923581007,
+      0.6299801584177076,
+      0.8496322733983215
+    ],
+    "target_names": [
+      "target_00",
+      "target_01",
+      "target_02",
+      "target_03",
+      "target_04"
+    ]
+  }
+}

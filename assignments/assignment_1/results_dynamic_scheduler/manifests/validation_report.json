@@ -1,0 +1,408 @@
+{
+  "runs": [
+    {
+      "condition": "dynamic_constant",
+      "seed": 0,
+      "evaluations": 5100,
+      "mutation_attempts": 2161,
+      "final_best": 13.467707825203131
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 0,
+      "evaluations": 5100,
+      "mutation_attempts": 2135,
+      "final_best": 13.01657508881031
+    },
+    {
+      "condition": "random_search",
+      "seed": 0,
+      "evaluations": 5100,
+      "final_best": 16.683095189484533
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 1,
+      "evaluations": 5100,
+      "mutation_attempts": 2128,
+      "final_best": 12.948331477354788
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 1,
+      "evaluations": 5100,
+      "mutation_attempts": 2194,
+      "final_best": 13.171779788708136
+    },
+    {
+      "condition": "random_search",
+      "seed": 1,
+      "evaluations": 5100,
+      "final_best": 16.978232998312528
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 2,
+      "evaluations": 5100,
+      "mutation_attempts": 2201,
+      "final_best": 12.799999999999999
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 2,
+      "evaluations": 5100,
+      "mutation_attempts": 2194,
+      "final_best": 12.87082869338697
+    },
+    {
+      "condition": "random_search",
+      "seed": 2,
+      "evaluations": 5100,
+      "final_best": 17.112403840463596
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 3,
+      "evaluations": 5100,
+      "mutation_attempts": 2188,
+      "final_best": 12.840967364599086
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 3,
+      "evaluations": 5100,
+      "mutation_attempts": 2151,
+      "final_best": 12.673320053068151
+    },
+    {
+      "condition": "random_search",
+      "seed": 3,
+      "evaluations": 5100,
+      "final_best": 17.207106781186546
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 4,
+      "evaluations": 5100,
+      "mutation_attempts": 2204,
+      "final_best": 12.589897948556635
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 4,
+      "evaluations": 5100,
+      "mutation_attempts": 2119,
+      "final_best": 13.255294535724685
+    },
+    {
+      "condition": "random_search",
+      "seed": 4,
+      "evaluations": 5100,
+      "final_best": 17.30990195135928
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 5,
+      "evaluations": 5100,
+      "mutation_attempts": 2084,
+      "final_best": 12.799999999999999
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 5,
+      "evaluations": 5100,
+      "mutation_attempts": 2174,
+      "final_best": 12.707106781186548
+    },
+    {
+      "condition": "random_search",
+      "seed": 5,
+      "evaluations": 5100,
+      "final_best": 17.460232526704264
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 6,
+      "evaluations": 5100,
+      "mutation_attempts": 2166,
+      "final_best": 12.760681686165901
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 6,
+      "evaluations": 5100,
+      "mutation_attempts": 2157,
+      "final_best": 12.394427190999917
+    },
+    {
+      "condition": "random_search",
+      "seed": 6,
+      "evaluations": 5100,
+      "final_best": 17.30990195135928
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 7,
+      "evaluations": 5100,
+      "mutation_attempts": 2138,
+      "final_best": 12.993737745050923
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 7,
+      "evaluations": 5100,
+      "mutation_attempts": 2141,
+      "final_best": 12.369535971483266
+    },
+    {
+      "condition": "random_search",
+      "seed": 7,
+      "evaluations": 5100,
+      "final_best": 16.378232998312527
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 8,
+      "evaluations": 5100,
+      "mutation_attempts": 2150,
+      "final_best": 12.672004514666936
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 8,
+      "evaluations": 5100,
+      "mutation_attempts": 2189,
+      "final_best": 12.547722557505166
+    },
+    {
+      "condition": "random_search",
+      "seed": 8,
+      "evaluations": 5100,
+      "final_best": 17.207106781186546
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 9,
+      "evaluations": 5100,
+      "mutation_attempts": 2115,
+      "final_best": 12.72474487139159
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 9,
+      "evaluations": 5100,
+      "mutation_attempts": 2160,
+      "final_best": 12.378232998312527
+    },
+    {
+      "condition": "random_search",
+      "seed": 9,
+      "evaluations": 5100,
+      "final_best": 17.171779788708136
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 10,
+      "evaluations": 5100,
+      "mutation_attempts": 2133,
+      "final_best": 12.98309518948453
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 10,
+      "evaluations": 5100,
+      "mutation_attempts": 2236,
+      "final_best": 13.16770782520313
+    },
+    {
+      "condition": "random_search",
+      "seed": 10,
+      "evaluations": 5100,
+      "final_best": 16.948331477354788
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 11,
+      "evaluations": 5100,
+      "mutation_attempts": 2233,
+      "final_best": 12.878232998312527
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 11,
+      "evaluations": 5100,
+      "mutation_attempts": 2159,
+      "final_best": 13.048808848170152
+    },
+    {
+      "condition": "random_search",
+      "seed": 11,
+      "evaluations": 5100,
+      "final_best": 16.98309518948453
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 12,
+      "evaluations": 5100,
+      "mutation_attempts": 2169,
+      "final_best": 12.448683298050513
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 12,
+      "evaluations": 5100,
+      "mutation_attempts": 2179,
+      "final_best": 13.292838827718413
+    },
+    {
+      "condition": "random_search",
+      "seed": 12,
+      "evaluations": 5100,
+      "final_best": 17.2
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 13,
+      "evaluations": 5100,
+      "mutation_attempts": 2145,
+      "final_best": 13.012403840463595
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 13,
+      "evaluations": 5100,
+      "mutation_attempts": 2194,
+      "final_best": 13.063818169698585
+    },
+    {
+      "condition": "random_search",
+      "seed": 13,
+      "evaluations": 5100,
+      "final_best": 17.26023252670426
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 14,
+      "evaluations": 5100,
+      "mutation_attempts": 2153,
+      "final_best": 13.162049935181331
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 14,
+      "evaluations": 5100,
+      "mutation_attempts": 2171,
+      "final_best": 13.069535971483266
+    },
+    {
+      "condition": "random_search",
+      "seed": 14,
+      "evaluations": 5100,
+      "final_best": 17.235270009440733
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 15,
+      "evaluations": 5100,
+      "mutation_attempts": 2218,
+      "final_best": 12.671779788708136
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 15,
+      "evaluations": 5100,
+      "mutation_attempts": 2222,
+      "final_best": 12.686796226411321
+    },
+    {
+      "condition": "random_search",
+      "seed": 15,
+      "evaluations": 5100,
+      "final_best": 17.2
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 16,
+      "evaluations": 5100,
+      "mutation_attempts": 2118,
+      "final_best": 12.803329637837292
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 16,
+      "evaluations": 5100,
+      "mutation_attempts": 2209,
+      "final_best": 13.366190378969058
+    },
+    {
+      "condition": "random_search",
+      "seed": 16,
+      "evaluations": 5100,
+      "final_best": 17.171779788708136
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 17,
+      "evaluations": 5100,
+      "mutation_attempts": 2156,
+      "final_best": 13.024807680927193
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 17,
+      "evaluations": 5100,
+      "mutation_attempts": 2152,
+      "final_best": 13.26332495807108
+    },
+    {
+      "condition": "random_search",
+      "seed": 17,
+      "evaluations": 5100,
+      "final_best": 17.26023252670426
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 18,
+      "evaluations": 5100,
+      "mutation_attempts": 2107,
+      "final_best": 13.127361849549569
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 18,
+      "evaluations": 5100,
+      "mutation_attempts": 2161,
+      "final_best": 12.735270009440733
+    },
+    {
+      "condition": "random_search",
+      "seed": 18,
+      "evaluations": 5100,
+      "final_best": 17.26023252670426
+    },
+    {
+      "condition": "dynamic_constant",
+      "seed": 19,
+      "evaluations": 5100,
+      "mutation_attempts": 2094,
+      "final_best": 13.394427190999917
+    },
+    {
+      "condition": "dynamic_exponential",
+      "seed": 19,
+      "evaluations": 5100,
+      "mutation_attempts": 2185,
+      "final_best": 12.961324772583616
+    },
+    {
+      "condition": "random_search",
+      "seed": 19,
+      "evaluations": 5100,
+      "final_best": 17.2
+    }
+  ],
+  "matched_initial_populations": 20,
+  "initial_trees_checked": 4000,
+  "final_trees_checked": 4000,
+  "total_objective_evaluations": 306000
+}

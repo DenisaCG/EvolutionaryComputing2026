@@ -1,0 +1,995 @@
+{
+  "python": "3.12.9 (main, Mar 17 2025, 21:06:20) [MSC v.1943 64 bit (AMD64)]",
+  "executable": "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "packages": {
+    "numpy": "2.3.3",
+    "networkx": "3.5",
+    "mujoco": "3.8.0",
+    "sqlmodel": "0.0.27",
+    "sqlalchemy": "2.0.43",
+    "scipy": "1.16.2",
+    "matplotlib": "3.10.7"
+  },
+  "git_head": "36466469a2300d6d22784469ff4460d9d55cbe12",
+  "source_sha256": {
+    "A1_template_2026.py": "d849deb2e6c94c3d2e7f27e2d546eb41830f00f756f5c2ce86d9f27cd599f3f7",
+    "analyze_results.py": "7df56ae92c4c0f1f5e2c96bb4a02c32f62e16c936445eb13e68e3804e14ebe4f",
+    "ea_common.py": "2b49675c2413fd5c42b75933df2e62448bd637a1ba9dc235f03e8beba05c3442",
+    "render_bodies.py": "f2f2c316da797cbd7b6ffe9243e3aa3349c0cbfc71059ecac2ebd125e2731ac0",
+    "run_ea.py": "65a227bb70ada52da0b3da44c7e03a0250476c2397402ca047d48d785bbe046c",
+    "run_random_search.py": "bd1e398ee92dfc4960e79a74a5e5fdf45a66c7e1ffeb8983c1a12bd1a1abae0f",
+    "tree_edit_distance.py": "98be067ff6a409f05b0acc203f94180b27326f6bd15d945d50c095f65838bc7b"
+  },
+  "target_sha256": {
+    "target_00.json": "dc295346bfef4ebde33d4a1aa24d94887b8a36cba8a72ccc3130516c50c18403",
+    "target_01.json": "9950b61a7edc2f35dad6a41dc56d47ba38952966d1e1625d6790f1d775ea8374",
+    "target_02.json": "c68f0dcd867623d71289ca819eef10e845a1be1f05525579ed3e06efb609dd4c",
+    "target_03.json": "e839eb3d1c76caa225dc9fda980e9f2f28603e6b0f695403a7be52b0489b9f28",
+    "target_04.json": "74f606aebd83c681de3a4821d4b9996299e9cb9abe8a4d8d616499abf39627de"
+  },
+  "workers": 6,
+  "runs": [
+    {
+      "condition": "exponential",
+      "seed": 1,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "1",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 122.07213339999998,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_1.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 1,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "1",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 125.93901619999997,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_1.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 0,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "0",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 126.19136709999998,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_0.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 0,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "0",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 128.05524849999983,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_0.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 1,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "1",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 149.70439269999997,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_1.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 0,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "0",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 151.24070329999995,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_0.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 2,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "2",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 124.6138517999998,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_2.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 2,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "2",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 121.31519169999979,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_2.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 3,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "3",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 129.97146159999988,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_3.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 3,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "3",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 139.46007239999994,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_3.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 2,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "2",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 168.8451765000002,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_2.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 3,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "3",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 171.2785374,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_3.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 4,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "4",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 126.3239039,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_4.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 4,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "4",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 127.79210920000014,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_4.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 5,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "5",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 115.81408439999996,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_5.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 5,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "5",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 118.41413000000011,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_5.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 4,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "4",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 165.80541219999986,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_4.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 5,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "5",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 153.3954944000002,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_5.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 6,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "6",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 102.93648469999971,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_6.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 6,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "6",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 100.99959609999996,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_6.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 7,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "7",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 85.94898749999993,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_7.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 7,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "7",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 101.6335697999998,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_7.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 6,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "6",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 147.4507120000003,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_6.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 8,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "8",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 109.25338269999975,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_8.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 8,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "8",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 117.29582950000031,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_8.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 7,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "7",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 150.21420839999973,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_7.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 9,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "9",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 109.09502049999992,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_9.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 8,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "8",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 151.97698620000028,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_8.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 9,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "9",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 104.33841260000008,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_9.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 10,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "10",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 93.88861270000007,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_10.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 10,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "10",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 98.51010410000026,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_10.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 9,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "9",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 151.8720558,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_9.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 11,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "11",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 105.79560170000013,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_11.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 11,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "11",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 105.74914820000004,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_11.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 10,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "10",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 146.58848970000008,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_10.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 12,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "12",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 102.91898179999998,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_12.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 11,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "11",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 140.59380650000003,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_11.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 12,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "12",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 91.41412840000021,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_12.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 13,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "13",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 88.64718949999997,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_13.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 13,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "13",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 83.47016669999994,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_13.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 12,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "12",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 136.43751659999998,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_12.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 14,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "14",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 81.01085570000032,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_14.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 14,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "14",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 85.98673879999978,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_14.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 15,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "15",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 89.14725780000026,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_15.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 13,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "13",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 137.57411059999959,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_13.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 15,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "15",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 82.86684630000036,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_15.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 14,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "14",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 136.9593600000003,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_14.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 16,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "16",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 87.5507821000001,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_16.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 16,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "16",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 85.52615260000039,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_16.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 15,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "15",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 135.47559600000022,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_15.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 17,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "17",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 88.63911999999982,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_17.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 17,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "17",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 85.26749770000015,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_17.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 16,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "16",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 149.8788196999999,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_16.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 18,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "18",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 113.5802391000002,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_18.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 19,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "19",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 113.1591427999997,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_19.log"
+    },
+    {
+      "condition": "constant",
+      "seed": 18,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "18",
+        "--mutation-schedule",
+        "constant"
+      ],
+      "exit_code": 0,
+      "seconds": 166.26555129999997,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\constant_seed_18.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 17,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "17",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 211.95495159999973,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_17.log"
+    },
+    {
+      "condition": "exponential",
+      "seed": 19,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_ea.py",
+        "--seed",
+        "19",
+        "--mutation-schedule",
+        "exponential"
+      ],
+      "exit_code": 0,
+      "seconds": 136.50501480000003,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\exponential_seed_19.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 18,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "18",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 195.29842849999977,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_18.log"
+    },
+    {
+      "condition": "random_search",
+      "seed": 19,
+      "command": [
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\run_random_search.py",
+        "--seed",
+        "19",
+        "--dynamic-scheduler"
+      ],
+      "exit_code": 0,
+      "seconds": 124.29955860000018,
+      "log": "__data__\\dynamic_scheduler_support\\run_logs\\random_search_seed_19.log"
+    }
+  ],
+  "elapsed_seconds": 1283.0432881000002,
+  "postprocessing_source_sha256": {
+    "analyze_results.py": "40e375897b037e813040deb2c56ff4f78e290857aa5921f9fb2a8948b76d3eaf",
+    "render_bodies.py": "f2f2c316da797cbd7b6ffe9243e3aa3349c0cbfc71059ecac2ebd125e2731ac0"
+  },
+  "postprocessing_commands": [
+    [
+      "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+      "-B",
+      "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\analyze_results.py",
+      "--experiment",
+      "dynamic"
+    ],
+    [
+      "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\.venv\\Scripts\\python.exe",
+      "-B",
+      "C:\\Users\\arsha\\OneDrive\\Documenten\\A_UvA MSc AI year 2\\1 Evolutionary Computing\\Assignments\\EvolutionaryComputing2026\\assignments\\assignment_1\\render_bodies.py",
+      "--experiment",
+      "dynamic"
+    ]
+  ]
+}

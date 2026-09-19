@@ -1,10 +1,7 @@
-"""Shared pieces for the mutation-only vs. mutation+crossover experiment.
+"""Shared fitness and operators for the historical and mutation-schedule EAs.
 
-Both EA variants (run_ea.py) and the random-search baseline
-(run_random_search.py) import from here, so the crossover toggle in
-run_ea.py stays the only difference between the two EA conditions:
-targets, fitness, mutation operators, depth cap, and selection are all
-defined once, in one place.
+Both new conditions always use crossover; only mutation-attempt timing differs.
+Random search samples the same depth-valid initialization distribution.
 """
 
 from __future__ import annotations
@@ -36,7 +33,7 @@ TARGET_DIR = HERE / "target_bodies"
 
 # --- SHARED EXPERIMENT CONSTANTS --- #
 # Identical across both EA variants and the random-search baseline.
-NUM_MODULES: int = 20
+NUM_MODULES: int = 20  # initial non-core modules; not an evolved size cap
 MAX_DEPTH: int = 12  # bloat control, applied identically after mutation and crossover
 POP_SIZE: int = 100
 NUM_GENERATIONS: int = 50
@@ -47,6 +44,32 @@ MUTATION_REPAIR_ATTEMPTS: int = 20
 # of offspring per generational step. The random-search baseline draws
 # exactly this many bodies.
 TOTAL_EVALS: int = (NUM_GENERATIONS + 1) * POP_SIZE
+
+# --- MUTATION SCHEDULE CONSTANTS --- #
+MUTATION_START: float = 0.8
+MUTATION_END: float = 0.2
+
+
+def exponential_mutation_rate(
+    generation: int,
+    num_generations: int = NUM_GENERATIONS,
+    start: float = MUTATION_START,
+    end: float = MUTATION_END,
+) -> float:
+    """Exponentially decrease mutation probability from start to end."""
+    if num_generations <= 1:
+        return end
+
+    progress = generation / (num_generations - 1)
+    return start * (end / start) ** progress
+
+
+def mutation_schedule(num_generations: int) -> tuple[list[float], float]:
+    """Return the zero-based exponential probabilities and their exact mean."""
+    if num_generations < 1:
+        raise ValueError("num_generations must be positive")
+    rates = [exponential_mutation_rate(g, num_generations) for g in range(num_generations)]
+    return rates, sum(rates) / len(rates)
 
 
 def load_targets(target_dir: Path = TARGET_DIR) -> list[nx.DiGraph]:
@@ -64,20 +87,19 @@ def fitness_of(genome: TreeGenome, targets: list[nx.DiGraph]) -> float:
 
 
 def random_valid_tree(num_modules: int = NUM_MODULES) -> TreeGenome:
-    """Sample a random tree genome with at least one non-core module."""
+    """Sample the original distribution, requiring non-core content and valid depth."""
+    if num_modules < 1:
+        raise ValueError("num_modules must be positive")
     while True:
         genome = random_tree(num_modules)
-        if len(genome.nodes) > 0:
+        if len(genome.nodes) > 1 and validate_tree_depth(genome, MAX_DEPTH):
             return genome
 
 
 def mutate(genome: TreeGenome) -> TreeGenome:
-    """Apply one of the two "always active" GP mutation operators (50/50).
+    """Attempt point or subtree mutation (50/50); either may shrink or do nothing.
 
-    ``mutate_shrink`` and ``mutate_hoist`` are deliberately excluded: they
-    are bloat-control operators, not primary variation, and mixing them in
-    would add a second uncontrolled factor (tree-size drift) on top of the
-    crossover toggle this experiment is isolating.
+    Mutation scheduling gates repaired_mutate(), without changing this mixture.
     """
     new = copy.deepcopy(genome)
     if random.random() < 0.5:

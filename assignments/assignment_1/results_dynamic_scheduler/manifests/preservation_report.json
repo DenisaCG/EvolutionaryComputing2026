@@ -1,0 +1,33 @@
+{
+  "original_files_checked": 2308,
+  "changed_existing_files": [
+    "assignments/assignment_1/analyze_results.py",
+    "assignments/assignment_1/ea_common.py",
+    "assignments/assignment_1/render_bodies.py",
+    "assignments/assignment_1/run_ea.py",
+    "assignments/assignment_1/run_random_search.py"
+  ],
+  "outside_assignment_1_unchanged": true,
+  "ariel_unchanged": true,
+  "template_unchanged": true,
+  "historical_results_unchanged": true,
+  "new_source_files": [],
+  "historical_result_sha256": {
+    "assignments/assignment_1/__results__/README.md": "70f1b11a3d842275da3fdada4c79119282d3ec2a13cabe3c03d6a9a155513f1f",
+    "assignments/assignment_1/__results__/manifests/best_individuals.json": "e7423855b474a83f6a95315383706b55273fc02a3d5233947238d5d8e990481e",
+    "assignments/assignment_1/__results__/plots/convergence_plot.png": "82f2c8f7a5b3695fa1b9620a12d816efb73800b99ca86b7166bf7a3b47b3c56c",
+    "assignments/assignment_1/__results__/plots/final_fitness_violin.png": "c0a05fbbf6de85b87f5fcdd216416ef89d312b0371d073ae0d17017384fc718d",
+    "assignments/assignment_1/__results__/plots/per_target_distance.png": "ac7319e450efcca305e592f3d13bf6f6d0e10aa9f89865fb6da8e671ba7d5c10",
+    "assignments/assignment_1/__results__/plots/render_mutation_crossover.png": "dc3ddd6488da7f1546186ce4625806c1acf765f08437542042b4aa9376ec3eb0",
+    "assignments/assignment_1/__results__/plots/render_mutation_only.png": "cf8a4fdcdd4d621788f85e65631dd17a1e1d718fe1b121fecb6d425b876d6051",
+    "assignments/assignment_1/__results__/plots/render_random_search.png": "b2ecf22a4b6d53bf763ea75e4c818f8fe31a4be4df72a3ad5aedd37d11cb173e",
+    "assignments/assignment_1/__results__/plots/tree_size_plot.png": "c7614190d7a75ee30fdf98c2856ed853020d3658ae13d1f52781c771f9d8371e",
+    "assignments/assignment_1/__results__/tables/condition_summary.csv": "e4af5f0bae99ec48d8d063901470b3f4478e217e2f6e2ce058b3e3878bb1864c",
+    "assignments/assignment_1/__results__/tables/convergence_speed.csv": "27923da6bd6a30f079927b4d6f6015382bb2882a8574ddc8473f250eec2d5c13",
+    "assignments/assignment_1/__results__/tables/generation_summary.csv": "30a133763e07a2f835b404cf7ab3a441129c473d0496b6eb47106ae08a694989",
+    "assignments/assignment_1/__results__/tables/per_target_distance.csv": "e17e5846ee0928c585f258066a0d714fd5299a4cc358dd06509b423709a226c3",
+    "assignments/assignment_1/__results__/tables/tree_size_summary.csv": "ca2e9749de2a1e233a9afcebc4636d1acd712312b4d19a693d0db21aabd50be3"
+  },
+  "historical_data_unchanged": true,
+  "user_schedule_function_unchanged": true
+}

@@ -13,8 +13,10 @@ Raw __data__ is never modified.
 Usage
 -----
     python analyze_results.py
+    python analyze_results.py --experiment dynamic
 """
 
+import argparse
 import csv
 import json
 import sqlite3
@@ -34,9 +36,9 @@ RESULTS_DIR = HERE / "__results__"
 PLOTS_DIR = RESULTS_DIR / "plots"
 TABLES_DIR = RESULTS_DIR / "tables"
 MANIFESTS_DIR = RESULTS_DIR / "manifests"
-for _dir in (PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR):
-    _dir.mkdir(parents=True, exist_ok=True)
 
+EA_CONDITIONS = ("mutation_only", "mutation_crossover")
+RANDOM_SEARCH_FOLDER = "random_search"
 SEEDS: list[int] = [0, 1, 2, 3, 4]
 CHECKPOINTS: list[int] = list(range(NUM_GENERATIONS + 1))  # generation indices
 
@@ -56,7 +58,7 @@ COLORS: dict[str, str] = {
 def ea_generation_stats(variant: str, seed: int) -> dict[str, list[float]]:
     """Per-generation cumulative evals, population mean/std, and best-so-far."""
     db_path = DATA_DIR / "ea" / variant / f"seed_{seed}" / "database.db"
-    con = sqlite3.connect(db_path)
+    con = sqlite3.connect(db_path.resolve().as_uri() + "?mode=ro", uri=True)
     rows = con.execute(
         "SELECT time_of_birth, fitness_ FROM individual ORDER BY time_of_birth",
     ).fetchall()
@@ -66,6 +68,11 @@ def ea_generation_stats(variant: str, seed: int) -> dict[str, list[float]]:
     for gen, fit in rows:
         by_gen.setdefault(gen, []).append(fit)
 
+    if sorted(by_gen) != CHECKPOINTS or any(
+        len(fits) != POP_SIZE or any(f is None or not np.isfinite(f) for f in fits)
+        for fits in by_gen.values()
+    ):
+        raise ValueError(f"Incomplete or invalid run: {db_path}")
     cumulative_evals, pop_mean, pop_std, best_so_far = [], [], [], []
     running_best = float("inf")
     for gen in sorted(by_gen):
@@ -90,9 +97,11 @@ def random_search_generation_stats(seed: int) -> dict[str, list[float]]:
     checkpoints as the EA variants, per the shared-x-axis plan agreed for this
     experiment (see run_random_search.py's module docstring).
     """
-    path = DATA_DIR / "random_search" / f"seed_{seed}" / "results.csv"
+    path = DATA_DIR / RANDOM_SEARCH_FOLDER / f"seed_{seed}" / "results.csv"
     with path.open() as f:
         fitness = [float(row["fitness"]) for row in csv.DictReader(f)]
+    if len(fitness) != (NUM_GENERATIONS + 1) * POP_SIZE or not np.isfinite(fitness).all():
+        raise ValueError(f"Incomplete or invalid random-search run: {path}")
 
     cumulative_evals, pop_mean, pop_std, best_so_far = [], [], [], []
     running_best = float("inf")
@@ -124,12 +133,12 @@ def evals_to_reach(stats: dict[str, list[float]], threshold: float) -> int | Non
 def best_individual_genome(condition: str, seed: int) -> TreeGenome:
     """The best (lowest-fitness) genome found anywhere across the whole run."""
     if condition == "random_search":
-        path = DATA_DIR / "random_search" / f"seed_{seed}" / "best_genome.json"
+        path = DATA_DIR / RANDOM_SEARCH_FOLDER / f"seed_{seed}" / "best_genome.json"
         with path.open() as f:
             return TreeGenome.from_dict(json.load(f))
 
     db_path = DATA_DIR / "ea" / condition / f"seed_{seed}" / "database.db"
-    con = sqlite3.connect(db_path)
+    con = sqlite3.connect(db_path.resolve().as_uri() + "?mode=ro", uri=True)
     row = con.execute(
         "SELECT genotype_ FROM individual ORDER BY fitness_ ASC LIMIT 1",
     ).fetchone()
@@ -141,7 +150,7 @@ def plot_final_fitness_violin(
     per_seed: dict[str, dict[int, dict[str, list[float]]]],
 ) -> None:
     """Violin plot of final best-so-far fitness, one violin per condition."""
-    conditions = ("random_search", "mutation_only", "mutation_crossover")
+    conditions = ("random_search", *EA_CONDITIONS)
     data = [[per_seed[c][seed]["best_so_far"][-1] for seed in SEEDS] for c in conditions]
 
     fig, ax = plt.subplots(figsize=(6, 4.5))
@@ -155,7 +164,7 @@ def plot_final_fitness_violin(
         parts[key].set_color("#333333")
         parts[key].set_linewidth(1)
 
-    # n=5 per condition: a violin alone can mislead, so overlay the raw points.
+    # Overlay the actual seed values as well as the smoothed distribution.
     rng = np.random.default_rng(0)
     for i, values in enumerate(data):
         jitter = rng.uniform(-0.05, 0.05, size=len(values))
@@ -166,8 +175,8 @@ def plot_final_fitness_violin(
 
     ax.set_xticks(positions)
     ax.set_xticklabels([LABELS[c] for c in conditions])
-    ax.set_ylabel("Final best-so-far fitness (5100 evals)\nlower is better")
-    ax.set_title("Final-fitness distribution across 5 independent seeds")
+    ax.set_ylabel(f"Final best-so-far fitness ({(NUM_GENERATIONS + 1) * POP_SIZE} evals)\nlower is better")
+    ax.set_title(f"Final-fitness distribution across {len(SEEDS)} independent seeds")
     ax.grid(axis="y", color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -189,7 +198,7 @@ def per_target_distance_analysis(
 
     rows_out = []
     manifest: dict[str, dict] = {}
-    for condition in ("mutation_only", "mutation_crossover", "random_search"):
+    for condition in (*EA_CONDITIONS, "random_search"):
         per_seed_distances = []
         best_overall: tuple[float, int, TreeGenome, list[float]] | None = None
         for seed in SEEDS:
@@ -200,6 +209,8 @@ def per_target_distance_analysis(
                 rows_out.append([condition, seed, name, d])
 
             fitness = per_seed[condition][seed]["best_so_far"][-1]
+            if not np.isclose(np.mean(dists) + np.std(dists), fitness, rtol=0, atol=1e-10):
+                raise ValueError(f"Best genome/fitness mismatch: {condition}, seed {seed}")
             if best_overall is None or fitness < best_overall[0]:
                 best_overall = (fitness, seed, genome, dists)
 
@@ -229,7 +240,7 @@ def per_target_distance_analysis(
     fig, ax = plt.subplots(figsize=(7, 4.5))
     x = np.arange(len(target_names))
     width = 0.25
-    conditions = ("random_search", "mutation_only", "mutation_crossover")
+    conditions = ("random_search", *EA_CONDITIONS)
     for i, condition in enumerate(conditions):
         offset = (i - 1) * width
         ax.bar(
@@ -244,7 +255,7 @@ def per_target_distance_analysis(
     ax.set_ylabel(
         "Tree edit distance to target\n(mean ± std of each seed's best individual)",
     )
-    ax.set_title("Per-target distance of each condition's best evolved body")
+    ax.set_title("Per-target distance of each seed's best body")
     ax.grid(axis="y", color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -257,7 +268,7 @@ def per_target_distance_analysis(
 def tree_size_stats(variant: str, seed: int) -> dict[str, list[float]]:
     """Per-generation cumulative evals and population mean/std module count."""
     db_path = DATA_DIR / "ea" / variant / f"seed_{seed}" / "database.db"
-    con = sqlite3.connect(db_path)
+    con = sqlite3.connect(db_path.resolve().as_uri() + "?mode=ro", uri=True)
     rows = con.execute(
         "SELECT time_of_birth, genotype_ FROM individual ORDER BY time_of_birth",
     ).fetchall()
@@ -282,7 +293,7 @@ def tree_size_stats(variant: str, seed: int) -> dict[str, list[float]]:
 
 
 def plot_tree_size() -> None:
-    """Population module count over generations, mutation-only vs. crossover.
+    """Population module count over generations for the selected EA conditions.
 
     Random search is intentionally excluded: bloat is a selection-driven
     phenomenon, and random search resamples independently every draw, so it
@@ -290,7 +301,7 @@ def plot_tree_size() -> None:
     """
     fig, ax = plt.subplots(figsize=(7, 4.5))
     rows_out = []
-    for condition in ("mutation_only", "mutation_crossover"):
+    for condition in EA_CONDITIONS:
         per_seed_mean = []
         cumulative_evals_ref: list[int] | None = None
         for seed in SEEDS:
@@ -329,11 +340,11 @@ def plot_tree_size() -> None:
         writer.writerows(rows_out)
 
     ax.axhline(
-        NUM_MODULES, color="#999999", linestyle="--", linewidth=1,
-        label=f"module budget ({NUM_MODULES})",
+        NUM_MODULES + 1, color="#999999", linestyle="--", linewidth=1,
+        label=f"initial tree size ({NUM_MODULES + 1}, including core)",
     )
     ax.set_xlabel("Cumulative fitness evaluations")
-    ax.set_ylabel("Population module count (mean ± std over 5 seeds)")
+    ax.set_ylabel(f"Population module count (mean ± std over {len(SEEDS)} seeds)")
     ax.set_title("Tree size over generations (bloat check)")
     ax.grid(color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
@@ -343,18 +354,93 @@ def plot_tree_size() -> None:
     fig.savefig(PLOTS_DIR / "tree_size_plot.png", dpi=200)
 
 
-def main() -> None:
-    per_seed: dict[str, dict[int, dict[str, list[float]]]] = {
-        "mutation_only": {},
-        "mutation_crossover": {},
-        "random_search": {},
-    }
+def main(argv: list[str] | None = None) -> None:
+    global EA_CONDITIONS, RANDOM_SEARCH_FOLDER, SEEDS, CHECKPOINTS
+    global RESULTS_DIR, PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR, POP_SIZE, NUM_GENERATIONS
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--experiment", choices=("legacy", "dynamic"), default="legacy")
+    parser.add_argument("--pop-size", type=int, default=POP_SIZE)
+    parser.add_argument("--generations", type=int, default=NUM_GENERATIONS)
+    args = parser.parse_args(argv)
+    POP_SIZE, NUM_GENERATIONS = args.pop_size, args.generations
+    CHECKPOINTS = list(range(NUM_GENERATIONS + 1))
+    if args.experiment == "dynamic":
+        EA_CONDITIONS = ("dynamic_constant", "dynamic_exponential")
+        RANDOM_SEARCH_FOLDER = "random_search_dynamic_scheduler"
+        SEEDS = list(range(20))
+        RESULTS_DIR = HERE / "results_dynamic_scheduler"
+        PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR = (RESULTS_DIR / p for p in ("plots", "tables", "manifests"))
+        LABELS.update(dynamic_constant="Constant mutation EA",
+                      dynamic_exponential="Exponential mutation EA")
+        COLORS.update(dynamic_constant="#0072B2", dynamic_exponential="#D55E00")
+        # Use recorded probabilities, not a schedule reconstructed from possibly changed code.
+        reference = None
+        for seed in SEEDS:
+            for condition in (*EA_CONDITIONS, "random_search"):
+                directory = (DATA_DIR / RANDOM_SEARCH_FOLDER if condition == "random_search"
+                             else DATA_DIR / "ea" / condition) / f"seed_{seed}"
+                meta = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
+                if (meta["status"] != "complete" or meta["seed"] != seed
+                    or meta["condition"] != condition or meta["pop_size"] != POP_SIZE
+                    or meta["generations"] != NUM_GENERATIONS
+                    or meta["actual_evaluations"] != (NUM_GENERATIONS + 1) * POP_SIZE):
+                    raise ValueError(f"Incompatible run metadata: {directory}")
+                if condition != "random_search":
+                    schedule = (meta["exponential_probabilities"], meta["constant_mutation_probability"])
+                    if reference is not None and schedule != reference:
+                        raise ValueError(f"Different schedule settings: {directory}")
+                    reference = schedule
+        rates, constant = reference
+        if len(rates) != NUM_GENERATIONS or not np.isclose(sum(rates), len(rates) * constant):
+            raise ValueError("Invalid recorded mutation schedule")
+
+    per_seed = {condition: {} for condition in (*EA_CONDITIONS, "random_search")}
     for seed in SEEDS:
-        per_seed["mutation_only"][seed] = ea_generation_stats("mutation_only", seed)
-        per_seed["mutation_crossover"][seed] = ea_generation_stats(
-            "mutation_crossover", seed,
-        )
+        for condition in EA_CONDITIONS:
+            per_seed[condition][seed] = ea_generation_stats(condition, seed)
         per_seed["random_search"][seed] = random_search_generation_stats(seed)
+
+    for directory in (PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR):
+        directory.mkdir(parents=True, exist_ok=True)
+    if args.experiment == "dynamic":
+        with (RESULTS_DIR / "mutation_schedule.csv").open("w", newline="") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(["schedule_index", "offspring_generation",
+                             "exponential_probability", "constant_probability"])
+            writer.writerows((i, i + 1, rate, constant) for i, rate in enumerate(rates))
+        final = {c: np.array([per_seed[c][seed]["best_so_far"][-1] for seed in SEEDS])
+                 for c in per_seed}
+        with (TABLES_DIR / "final_fitness_summary.csv").open("w", newline="") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(["condition", "runs", "mean", "std", "median", "min", "max"])
+            for c, values in final.items():
+                writer.writerow([c, len(values), values.mean(), values.std(),
+                                 np.median(values), values.min(), values.max()])
+        delta = final["dynamic_exponential"] - final["dynamic_constant"]
+        with (TABLES_DIR / "paired_differences.csv").open("w", newline="") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(["seed", "constant", "exponential", "delta_exponential_minus_constant"])
+            writer.writerows(zip(SEEDS, final["dynamic_constant"], final["dynamic_exponential"], delta))
+        paired = {"mean_delta": float(delta.mean()), "median_delta": float(np.median(delta)),
+                  "std_delta": float(delta.std()), "exponential_wins": int(sum(delta < -1e-12)),
+                  "constant_wins": int(sum(delta > 1e-12)),
+                  "ties": int(sum(np.abs(delta) <= 1e-12)), "std_ddof": 0}
+        try:
+            from scipy.stats import wilcoxon
+        except ImportError:
+            paired["test"] = "Not run: scipy unavailable"
+        else:
+            # Round only for the rank test to avoid floating-point pseudo-ties.
+            rounded = np.round(delta, 12)
+            if np.any(rounded):
+                result = wilcoxon(rounded, alternative="two-sided", zero_method="wilcox", method="auto")
+                paired.update(test="Wilcoxon signed-rank, two-sided, zero_method=wilcox, method=auto",
+                              delta_rounding_decimals=12, statistic=float(result.statistic),
+                              p_value=float(result.pvalue))
+            else:
+                paired["test"] = "Not run: all paired differences are zero"
+        (TABLES_DIR / "paired_summary.json").write_text(json.dumps(paired, indent=2), encoding="utf-8")
+        print(json.dumps(paired, indent=2))
 
     # --- per-seed, per-generation table (report-ready long format) --- #
     with (TABLES_DIR / "generation_summary.csv").open("w", newline="") as f:
@@ -408,7 +494,7 @@ def main() -> None:
     # --- convergence speed: evals to reach within 5% of the best EA result --- #
     final_bests = [
         condition_summary[c]["mean_best_so_far"][-1]
-        for c in ("mutation_only", "mutation_crossover")
+        for c in EA_CONDITIONS
     ]
     threshold = min(final_bests) * 1.05  # lower fitness is better
     with (TABLES_DIR / "convergence_speed.csv").open("w", newline="") as f:
@@ -420,7 +506,7 @@ def main() -> None:
 
     # --- convergence plot --- #
     fig, ax = plt.subplots(figsize=(7, 4.5))
-    for condition in ("random_search", "mutation_only", "mutation_crossover"):
+    for condition in ("random_search", *EA_CONDITIONS):
         stats = condition_summary[condition]
         evals = np.array(stats["cumulative_evals"])
         mean_ = np.array(stats["mean_best_so_far"])
@@ -432,8 +518,9 @@ def main() -> None:
         )
 
     ax.set_xlabel("Cumulative fitness evaluations")
-    ax.set_ylabel("Best-so-far fitness (mean ± std over 5 seeds)\nlower is better")
-    ax.set_title("Convergence: mutation-only vs. mutation+crossover vs. random search")
+    ax.set_ylabel(f"Best-so-far fitness (mean ± std over {len(SEEDS)} seeds)\nlower is better")
+    ax.set_title("Convergence: mutation schedules and random search" if args.experiment == "dynamic"
+                 else "Convergence: mutation-only vs. mutation+crossover vs. random search")
     ax.grid(color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)

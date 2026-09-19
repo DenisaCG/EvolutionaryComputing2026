@@ -2,12 +2,16 @@
 
 Random search has no generations, so results are logged against cumulative
 evaluation count rather than forced into a generation axis. Plot this against
-the EA lines using cumulative evals = generation * pop_size for the same
+the EA lines using cumulative evals = (generation + 1) * pop_size for the same
 comparison points (see run_ea.py for pop_size/generations).
 
 Usage
 -----
     python run_random_search.py --seed 0
+    python run_random_search.py --seed 0 --dynamic-scheduler
+
+Random search samples the EA initialization distribution, not the entire
+variable-size domain reachable through evolution.
 """
 
 from __future__ import annotations
@@ -31,12 +35,15 @@ from ea_common import (
 HERE = Path(__file__).parent
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--pop-size", type=int, default=POP_SIZE)
     parser.add_argument("--generations", type=int, default=NUM_GENERATIONS)
-    args = parser.parse_args()
+    parser.add_argument("--dynamic-scheduler", action="store_true")
+    args = parser.parse_args(argv)
+    if args.pop_size < 1 or args.generations < 0:
+        parser.error("pop-size must be positive and generations nonnegative")
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -45,8 +52,9 @@ def main() -> None:
 
     targets = load_targets()
 
-    data_dir = HERE / "__data__" / "random_search" / f"seed_{args.seed}"
-    data_dir.mkdir(parents=True, exist_ok=True)
+    folder = "random_search_dynamic_scheduler" if args.dynamic_scheduler else "random_search"
+    data_dir = HERE / "__data__" / folder / f"seed_{args.seed}"
+    data_dir.mkdir(parents=True, exist_ok=not args.dynamic_scheduler)
 
     best_so_far = float("inf")
     best_genome = None
@@ -66,6 +74,15 @@ def main() -> None:
 
     with (data_dir / "best_genome.json").open("w") as f:
         json.dump(best_genome.to_dict(), f)
+
+    if args.dynamic_scheduler:
+        metadata = {
+            "status": "complete", "condition": "random_search", "seed": args.seed,
+            "pop_size": args.pop_size, "generations": args.generations,
+            "total_evaluations": total_evals, "actual_evaluations": len(rows),
+            "baseline": "random search over the depth-valid EA initialization distribution",
+        }
+        (data_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

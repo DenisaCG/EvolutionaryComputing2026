@@ -11,8 +11,10 @@ Usage
 -----
     python analyze_results.py   # must run first, writes best_individuals.json
     python render_bodies.py
+    python render_bodies.py --experiment dynamic
 """
 
+import argparse
 import json
 from pathlib import Path
 
@@ -37,7 +39,6 @@ HERE = Path(__file__).parent
 RESULTS_DIR = HERE / "__results__"
 PLOTS_DIR = RESULTS_DIR / "plots"
 MANIFESTS_DIR = RESULTS_DIR / "manifests"
-PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 LABELS: dict[str, str] = {
     "mutation_only": "Mutation-only EA",
@@ -63,7 +64,18 @@ def render_graph(graph: nx.DiGraph) -> np.ndarray:
     return np.asarray(image)
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    global RESULTS_DIR, PLOTS_DIR, MANIFESTS_DIR
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--experiment", choices=("legacy", "dynamic"), default="legacy")
+    args = parser.parse_args(argv)
+    if args.experiment == "dynamic":
+        RESULTS_DIR = HERE / "results_dynamic_scheduler"
+        PLOTS_DIR = RESULTS_DIR / "plots"
+        MANIFESTS_DIR = RESULTS_DIR / "manifests"
+        LABELS.update(dynamic_constant="Constant mutation EA",
+                      dynamic_exponential="Exponential mutation EA")
+    PLOTS_DIR.mkdir(parents=True, exist_ok=True)
     mj.set_mjcb_control(None)  # global MuJoCo control callback - clear before use
 
     with (MANIFESTS_DIR / "best_individuals.json").open() as f:

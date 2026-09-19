@@ -1,0 +1,19 @@
+{
+  "constant_probability": 0.43418063336559626,
+  "exponential_endpoints": [
+    0.8,
+    0.2
+  ],
+  "expected_attempts_exponential": 2170.9031668279813,
+  "expected_attempts_constant": 2170.9031668279813,
+  "cpu_count": 8,
+  "tests": [
+    "real metric + real ARIEL: both cross over, shared initialization, valid depth, full replacement, 12 evaluations each",
+    "mutation gate: closed gate calls repaired_mutate zero times; open gate calls it once per offspring",
+    "real ARIEL with cheap test objective: 5100 evaluations, 100 per generation, 2500 crossovers, exact schedule indices 0..49",
+    "random-search equal budget, same initial fitness sequence",
+    "initialization rejects over-depth draws and preserves the 20-noncore request",
+    "both historical CLI modes still execute"
+  ],
+  "smoke_directory": "__data__\\dynamic_scheduler_smoke\\1789780395335905700"
+}
