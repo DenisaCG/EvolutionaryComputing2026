@@ -57,8 +57,12 @@ def main(argv: list[str] | None = None) -> None:
     mode.add_argument("--mutation-schedule", choices=("constant", "exponential"))
     parser.add_argument("--pop-size", type=int, default=POP_SIZE)
     parser.add_argument("--generations", type=int, default=NUM_GENERATIONS)
+    parser.add_argument("--extreme-decrease", action="store_true",
+                        help="Store the sensitivity experiment in separate raw-data paths.")
     args = parser.parse_args(argv)
     dynamic = args.mutation_schedule is not None
+    if args.extreme_decrease and not dynamic:
+        parser.error("--extreme-decrease requires --mutation-schedule")
     if args.pop_size < TOURNAMENT_SIZE or args.generations < (1 if dynamic else 0):
         parser.error("pop-size must be >= tournament size; dynamic generations must be positive")
 
@@ -69,7 +73,10 @@ def main(argv: list[str] | None = None) -> None:
 
     variant = (f"dynamic_{args.mutation_schedule}" if dynamic else
                "mutation_crossover" if args.crossover else "mutation_only")
-    data_dir = HERE / "__data__" / "ea" / variant / f"seed_{args.seed}"
+    data_root = HERE / "__data__"
+    if args.extreme_decrease:
+        data_root /= "extreme_decrease"
+    data_dir = data_root / "ea" / variant / f"seed_{args.seed}"
     data_dir.mkdir(parents=True, exist_ok=not dynamic)
     if dynamic:
         rates, constant = mutation_schedule(args.generations)

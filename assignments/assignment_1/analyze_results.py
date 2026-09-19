@@ -525,20 +525,23 @@ def plot_best_so_far_vs_generation_best(
 
 
 def main(argv: list[str] | None = None) -> None:
-    global EA_CONDITIONS, RANDOM_SEARCH_FOLDER, SEEDS, CHECKPOINTS
+    global EA_CONDITIONS, RANDOM_SEARCH_FOLDER, SEEDS, CHECKPOINTS, DATA_DIR
     global RESULTS_DIR, PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR, POP_SIZE, NUM_GENERATIONS
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--experiment", choices=("legacy", "dynamic"), default="legacy")
+    parser.add_argument("--experiment", choices=("legacy", "dynamic", "extreme"), default="legacy")
     parser.add_argument("--pop-size", type=int, default=POP_SIZE)
     parser.add_argument("--generations", type=int, default=NUM_GENERATIONS)
     args = parser.parse_args(argv)
     POP_SIZE, NUM_GENERATIONS = args.pop_size, args.generations
     CHECKPOINTS = list(range(NUM_GENERATIONS + 1))
-    if args.experiment == "dynamic":
+    if args.experiment in ("dynamic", "extreme"):
+        if args.experiment == "extreme":
+            DATA_DIR = HERE / "__data__" / "extreme_decrease"
         EA_CONDITIONS = ("dynamic_constant", "dynamic_exponential")
         RANDOM_SEARCH_FOLDER = "random_search_dynamic_scheduler"
         SEEDS = list(range(20))
-        RESULTS_DIR = HERE / "results_dynamic_scheduler"
+        RESULTS_DIR = HERE / ("results_extreme_decrease" if args.experiment == "extreme"
+                              else "results_dynamic_scheduler")
         PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR = (RESULTS_DIR / p for p in ("plots", "tables", "manifests"))
         LABELS.update(dynamic_constant="Constant mutation EA",
                       dynamic_exponential="Exponential mutation EA")
@@ -572,7 +575,7 @@ def main(argv: list[str] | None = None) -> None:
 
     for directory in (PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR):
         directory.mkdir(parents=True, exist_ok=True)
-    if args.experiment == "dynamic":
+    if args.experiment in ("dynamic", "extreme"):
         with (RESULTS_DIR / "mutation_schedule.csv").open("w", newline="") as stream:
             writer = csv.writer(stream)
             writer.writerow(["schedule_index", "offspring_generation",
@@ -707,7 +710,7 @@ def main(argv: list[str] | None = None) -> None:
 
     ax.set_xlabel("Cumulative fitness evaluations")
     ax.set_ylabel(f"Best-so-far fitness (mean ± std over {len(SEEDS)} seeds)\nlower is better")
-    ax.set_title("Convergence: mutation schedules and random search" if args.experiment == "dynamic"
+    ax.set_title("Convergence: mutation schedules and random search" if args.experiment in ("dynamic", "extreme")
                  else "Convergence: mutation-only vs. mutation+crossover vs. random search")
     ax.grid(color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)

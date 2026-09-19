@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "plots_visually_inspected": [
+    "best_mean_worst_plot.png",
+    "best_so_far_vs_generation_best.png",
+    "convergence_plot.png",
+    "final_fitness_violin.png",
+    "per_target_distance.png",
+    "render_dynamic_constant.png",
+    "render_dynamic_exponential.png",
+    "render_random_search.png",
+    "tree_size_plot.png"
+  ],
+  "png_integrity_passed": true,
+  "readme_local_links_checked": 29,
+  "schedule_csv_checked": true,
+  "tables_row_counts": {
+    "condition_summary.csv": 153,
+    "convergence_speed.csv": 60,
+    "final_fitness_summary.csv": 3,
+    "generation_summary.csv": 3060,
+    "improvement_80pct.csv": 4,
+    "paired_differences.csv": 20,
+    "per_target_distance.csv": 300,
+    "tree_size_summary.csv": 2040
+  },
+  "successful_postprocessing_backend": "Agg",
+  "initial_analysis_failure": "0xc000041d; unchanged pipeline retried successfully with Agg"
+}

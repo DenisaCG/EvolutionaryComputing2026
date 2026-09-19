@@ -1,0 +1,13 @@
+{
+  "mean_delta": 0.051607050905891946,
+  "median_delta": 0.02070828735973773,
+  "std_delta": 0.5260856417778716,
+  "exponential_wins": 10,
+  "constant_wins": 10,
+  "ties": 0,
+  "std_ddof": 0,
+  "test": "Wilcoxon signed-rank, two-sided, zero_method=wilcox, method=auto",
+  "delta_rounding_decimals": 12,
+  "statistic": 102.0,
+  "p_value": 0.9272785186767578
+}

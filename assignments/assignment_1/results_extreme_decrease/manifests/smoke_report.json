@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "constant_probability": 0.18489397506306005,
+  "exponential_endpoints": [
+    0.8,
+    0.01
+  ],
+  "expected_attempts_exponential": 924.4698753153002,
+  "expected_attempts_constant": 924.4698753153002,
+  "tests": [
+    "exact endpoints and arithmetic mean",
+    "mapping indices 0..49 to offspring generations 1..50",
+    "unchanged operators and all non-main analysis/render functions (AST against current HEAD)",
+    "real metric tiny paired runs: identical initialization, valid depth, 12 evaluations and 4 crossover calls",
+    "real ARIEL with cheap objective: both conditions exactly 5100 evaluations, 100 each generation, 2500 crossovers, actual logged probabilities correct",
+    "random search tiny real metric and full-budget cheap-objective check",
+    "depth-invalid initialization rejected and resampled with original module request",
+    "EA and random-search existing-run refusal",
+    "separate raw root, no preexisting experiment output"
+  ],
+  "smoke_directory": "__data__\\extreme_decrease_support\\smoke"
+}

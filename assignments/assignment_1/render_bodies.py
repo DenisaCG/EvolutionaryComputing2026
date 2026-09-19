@@ -67,10 +67,11 @@ def render_graph(graph: nx.DiGraph) -> np.ndarray:
 def main(argv: list[str] | None = None) -> None:
     global RESULTS_DIR, PLOTS_DIR, MANIFESTS_DIR
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--experiment", choices=("legacy", "dynamic"), default="legacy")
+    parser.add_argument("--experiment", choices=("legacy", "dynamic", "extreme"), default="legacy")
     args = parser.parse_args(argv)
-    if args.experiment == "dynamic":
-        RESULTS_DIR = HERE / "results_dynamic_scheduler"
+    if args.experiment in ("dynamic", "extreme"):
+        RESULTS_DIR = HERE / ("results_extreme_decrease" if args.experiment == "extreme"
+                              else "results_dynamic_scheduler")
         PLOTS_DIR = RESULTS_DIR / "plots"
         MANIFESTS_DIR = RESULTS_DIR / "manifests"
         LABELS.update(dynamic_constant="Constant mutation EA",

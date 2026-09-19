@@ -278,3 +278,5 @@ RECYCLE.BIN/
 # Assignment 1 report figures - exception to the blanket *.png rule above
 !assignments/assignment_1/__results__/plots/*.png
 !assignments/assignment_1/results_dynamic_scheduler/plots/*.png
+!assignments/assignment_1/results_extreme_decrease/plots/*.png
+

@@ -41,7 +41,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--pop-size", type=int, default=POP_SIZE)
     parser.add_argument("--generations", type=int, default=NUM_GENERATIONS)
     parser.add_argument("--dynamic-scheduler", action="store_true")
+    parser.add_argument("--extreme-decrease", action="store_true",
+                        help="Store the sensitivity baseline in separate raw-data paths.")
     args = parser.parse_args(argv)
+    if args.extreme_decrease and not args.dynamic_scheduler:
+        parser.error("--extreme-decrease requires --dynamic-scheduler")
     if args.pop_size < 1 or args.generations < 0:
         parser.error("pop-size must be positive and generations nonnegative")
 
@@ -53,7 +57,10 @@ def main(argv: list[str] | None = None) -> None:
     targets = load_targets()
 
     folder = "random_search_dynamic_scheduler" if args.dynamic_scheduler else "random_search"
-    data_dir = HERE / "__data__" / folder / f"seed_{args.seed}"
+    data_root = HERE / "__data__"
+    if args.extreme_decrease:
+        data_root /= "extreme_decrease"
+    data_dir = data_root / folder / f"seed_{args.seed}"
     data_dir.mkdir(parents=True, exist_ok=not args.dynamic_scheduler)
 
     best_so_far = float("inf")

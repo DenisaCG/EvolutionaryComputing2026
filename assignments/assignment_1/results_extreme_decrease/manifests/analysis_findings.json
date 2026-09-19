@@ -1,0 +1,390 @@
+{
+  "final": [
+    {
+      "condition": "dynamic_constant",
+      "runs": "20",
+      "mean": "12.801965681043779",
+      "std": "0.287214461970641",
+      "median": "12.801920240520264",
+      "min": "12.200000000000001",
+      "max": "13.380624847486569"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "runs": "20",
+      "mean": "12.853572731949672",
+      "std": "0.383350549661849",
+      "median": "12.838046165164169",
+      "min": "12.22736184954957",
+      "max": "13.557583690279023"
+    },
+    {
+      "condition": "random_search",
+      "runs": "20",
+      "mean": "17.126858442608913",
+      "std": "0.23541832306095384",
+      "median": "17.2",
+      "min": "16.378232998312527",
+      "max": "17.460232526704264"
+    }
+  ],
+  "paired": {
+    "mean_delta": 0.051607050905891946,
+    "median_delta": 0.02070828735973773,
+    "std_delta": 0.5260856417778716,
+    "exponential_wins": 10,
+    "constant_wins": 10,
+    "ties": 0,
+    "std_ddof": 0,
+    "test": "Wilcoxon signed-rank, two-sided, zero_method=wilcox, method=auto",
+    "delta_rounding_decimals": 12,
+    "statistic": 102.0,
+    "p_value": 0.9272785186767578
+  },
+  "old_final": [
+    {
+      "condition": "dynamic_constant",
+      "runs": "20",
+      "mean": "12.90521224212518",
+      "std": "0.24699736429494343",
+      "median": "12.859600181455807",
+      "min": "12.448683298050513",
+      "max": "13.467707825203131"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "runs": "20",
+      "mean": "12.90202198234675",
+      "std": "0.3135114774173407",
+      "median": "12.988949930696963",
+      "min": "12.369535971483266",
+      "max": "13.366190378969058"
+    },
+    {
+      "condition": "random_search",
+      "runs": "20",
+      "mean": "17.126858442608913",
+      "std": "0.23541832306095384",
+      "median": "17.2",
+      "min": "16.378232998312527",
+      "max": "17.460232526704264"
+    }
+  ],
+  "old_paired": {
+    "mean_delta": -0.0031902597784280395,
+    "median_delta": -0.038748762997440345,
+    "std_delta": 0.38073992499394405,
+    "exponential_wins": 10,
+    "constant_wins": 10,
+    "ties": 0,
+    "std_ddof": 0,
+    "test": "Wilcoxon signed-rank, two-sided, zero_method=wilcox, method=auto",
+    "delta_rounding_decimals": 12,
+    "statistic": 100.0,
+    "p_value": 0.8694877624511719
+  },
+  "improvement_80pct": [
+    {
+      "experiment": "original_0.8_to_0.2",
+      "condition": "dynamic_constant",
+      "generation": 8,
+      "cumulative_evals": 900,
+      "initial_mean_generation_best": 18.245128030234888,
+      "final_mean_generation_best": 13.368508052060099,
+      "threshold": 14.343832047695056,
+      "mean_generation_best_at_checkpoint": 14.31046371387466
+    },
+    {
+      "experiment": "original_0.8_to_0.2",
+      "condition": "dynamic_exponential",
+      "generation": 12,
+      "cumulative_evals": 1300,
+      "initial_mean_generation_best": 18.245128030234888,
+      "final_mean_generation_best": 13.166056592991714,
+      "threshold": 14.181870880440348,
+      "mean_generation_best_at_checkpoint": 14.131785689134365
+    },
+    {
+      "experiment": "extreme_0.8_to_0.01",
+      "condition": "dynamic_constant",
+      "generation": 9,
+      "cumulative_evals": 1000,
+      "initial_mean_generation_best": 18.245128030234888,
+      "final_mean_generation_best": 13.127864942496194,
+      "threshold": 14.151317560043932,
+      "mean_generation_best_at_checkpoint": 14.062379220971417
+    },
+    {
+      "experiment": "extreme_0.8_to_0.01",
+      "condition": "dynamic_exponential",
+      "generation": 11,
+      "cumulative_evals": 1200,
+      "initial_mean_generation_best": 18.245128030234888,
+      "final_mean_generation_best": 13.046223942128432,
+      "threshold": 14.086004759749724,
+      "mean_generation_best_at_checkpoint": 13.937326084180583
+    }
+  ],
+  "convergence": {
+    "dynamic_constant": {
+      "threshold": 13.442063965095969,
+      "reached": 20,
+      "median_evaluations": 1950.0,
+      "min_evaluations": 800,
+      "max_evaluations": 3700,
+      "final_mean_generation_best": 13.127864942496194,
+      "final_mean_population_fitness": 14.762257882882205,
+      "final_mean_generation_worst": 18.441281565926023,
+      "final_mean_best_so_far": 12.801965681043779,
+      "mean_generation_best_worsening_steps": 12
+    },
+    "dynamic_exponential": {
+      "threshold": 13.442063965095969,
+      "reached": 17,
+      "median_evaluations": 1900.0,
+      "min_evaluations": 700,
+      "max_evaluations": 3500,
+      "final_mean_generation_best": 13.046223942128432,
+      "final_mean_population_fitness": 14.69592627145352,
+      "final_mean_generation_worst": 18.88980016966112,
+      "final_mean_best_so_far": 12.853572731949672,
+      "mean_generation_best_worsening_steps": 11
+    },
+    "random_search": {
+      "threshold": 13.442063965095969,
+      "reached": 0,
+      "median_evaluations": null,
+      "min_evaluations": null,
+      "max_evaluations": null,
+      "final_mean_generation_best": 18.226569244955545,
+      "final_mean_population_fitness": 20.790973533835192,
+      "final_mean_generation_worst": 23.293655781285434,
+      "final_mean_best_so_far": 17.126858442608913,
+      "mean_generation_best_worsening_steps": 26
+    }
+  },
+  "population": {
+    "dynamic_constant": {
+      "initial_mean_nodes": 21.0,
+      "final_mean_nodes": 12.1765,
+      "final_std_across_seed_means": 0.6218623239914122,
+      "min_mean_nodes_over_generations": 10.408,
+      "generation_of_minimum": 6
+    },
+    "dynamic_exponential": {
+      "initial_mean_nodes": 21.0,
+      "final_mean_nodes": 12.2105,
+      "final_std_across_seed_means": 0.7031889859774542,
+      "min_mean_nodes_over_generations": 9.9575,
+      "generation_of_minimum": 5
+    }
+  },
+  "best_individuals": {
+    "dynamic_constant": {
+      "seed": 17,
+      "fitness": 12.200000000000001,
+      "nodes": 15,
+      "closest_target": "target_01",
+      "closest_target_distance": 11.5,
+      "per_target_mean": [
+        11.275,
+        11.25,
+        11.65,
+        12.375,
+        13.15
+      ],
+      "per_target_std": [
+        0.6796138609534095,
+        0.8587782018658834,
+        0.5937171043518958,
+        0.5673402858955109,
+        0.7088723439378912
+      ]
+    },
+    "dynamic_exponential": {
+      "seed": 2,
+      "fitness": 12.22736184954957,
+      "nodes": 13,
+      "closest_target": "target_00",
+      "closest_target_distance": 10.5,
+      "per_target_mean": [
+        10.975,
+        11.05,
+        11.25,
+        12.35,
+        13.35
+      ],
+      "per_target_std": [
+        0.7980444849756184,
+        0.9069178573608526,
+        0.8874119674649424,
+        0.6910137480542627,
+        0.6910137480542627
+      ]
+    },
+    "random_search": {
+      "seed": 7,
+      "fitness": 16.378232998312527,
+      "nodes": 21,
+      "closest_target": "target_00",
+      "closest_target_distance": 14.5,
+      "per_target_mean": [
+        16.125,
+        16.1,
+        16.025,
+        16.625,
+        16.875
+      ],
+      "per_target_std": [
+        0.6869315832017043,
+        0.874642784226795,
+        0.7822243923581007,
+        0.6299801584177076,
+        0.8496322733983215
+      ]
+    }
+  },
+  "attempts": {
+    "dynamic_constant": {
+      "mean": 922.9,
+      "std": 23.45826080509806,
+      "min": 890,
+      "max": 966
+    },
+    "dynamic_exponential": {
+      "mean": 919.25,
+      "std": 21.201120253420573,
+      "min": 878,
+      "max": 975
+    }
+  },
+  "checkpoints": [
+    {
+      "condition": "dynamic_constant",
+      "generation": "0",
+      "cumulative_evals": "100",
+      "mean_best_so_far": "18.245128030234888"
+    },
+    {
+      "condition": "dynamic_constant",
+      "generation": "4",
+      "cumulative_evals": "500",
+      "mean_best_so_far": "14.825109069893823"
+    },
+    {
+      "condition": "dynamic_constant",
+      "generation": "9",
+      "cumulative_evals": "1000",
+      "mean_best_so_far": "14.013049024461461"
+    },
+    {
+      "condition": "dynamic_constant",
+      "generation": "19",
+      "cumulative_evals": "2000",
+      "mean_best_so_far": "13.3248112072028"
+    },
+    {
+      "condition": "dynamic_constant",
+      "generation": "29",
+      "cumulative_evals": "3000",
+      "mean_best_so_far": "13.08304178716725"
+    },
+    {
+      "condition": "dynamic_constant",
+      "generation": "39",
+      "cumulative_evals": "4000",
+      "mean_best_so_far": "12.878239513873392"
+    },
+    {
+      "condition": "dynamic_constant",
+      "generation": "50",
+      "cumulative_evals": "5100",
+      "mean_best_so_far": "12.801965681043779"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "0",
+      "cumulative_evals": "100",
+      "mean_best_so_far": "18.245128030234888"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "4",
+      "cumulative_evals": "500",
+      "mean_best_so_far": "14.787638833973219"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "9",
+      "cumulative_evals": "1000",
+      "mean_best_so_far": "14.007089762351004"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "19",
+      "cumulative_evals": "2000",
+      "mean_best_so_far": "13.44393721315202"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "29",
+      "cumulative_evals": "3000",
+      "mean_best_so_far": "13.117631918034126"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "39",
+      "cumulative_evals": "4000",
+      "mean_best_so_far": "12.94165347911976"
+    },
+    {
+      "condition": "dynamic_exponential",
+      "generation": "50",
+      "cumulative_evals": "5100",
+      "mean_best_so_far": "12.853572731949672"
+    },
+    {
+      "condition": "random_search",
+      "generation": "0",
+      "cumulative_evals": "100",
+      "mean_best_so_far": "18.245128030234888"
+    },
+    {
+      "condition": "random_search",
+      "generation": "4",
+      "cumulative_evals": "500",
+      "mean_best_so_far": "17.769256043373666"
+    },
+    {
+      "condition": "random_search",
+      "generation": "9",
+      "cumulative_evals": "1000",
+      "mean_best_so_far": "17.45120923162447"
+    },
+    {
+      "condition": "random_search",
+      "generation": "19",
+      "cumulative_evals": "2000",
+      "mean_best_so_far": "17.269787830717195"
+    },
+    {
+      "condition": "random_search",
+      "generation": "29",
+      "cumulative_evals": "3000",
+      "mean_best_so_far": "17.208074962253047"
+    },
+    {
+      "condition": "random_search",
+      "generation": "39",
+      "cumulative_evals": "4000",
+      "mean_best_so_far": "17.163668156711392"
+    },
+    {
+      "condition": "random_search",
+      "generation": "50",
+      "cumulative_evals": "5100",
+      "mean_best_so_far": "17.126858442608913"
+    }
+  ],
+  "batch_seconds": 2105.6549758
+}

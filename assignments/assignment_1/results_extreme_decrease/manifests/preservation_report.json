@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "baseline_files_checked": 2668,
+  "changed_existing_files": [
+    "assignments/assignment_1/analyze_results.py",
+    "assignments/assignment_1/ea_common.py",
+    "assignments/assignment_1/render_bodies.py",
+    "assignments/assignment_1/run_ea.py",
+    "assignments/assignment_1/run_random_search.py"
+  ],
+  "missing_files": [],
+  "original_results_dynamic_scheduler_unchanged": true,
+  "historical_results_unchanged": true,
+  "historical_raw_data_unchanged": true,
+  "src_ariel_unchanged": true,
+  "template_unchanged": true,
+  "targets_and_fitness_unchanged": true,
+  "no_changes_outside_assignment_1": true,
+  "no_new_python_source_files": true,
+  "teammate_analysis_functions_preserved": "All non-main functions match current HEAD AST; main diff only experiment routing",
+  "baseline_hash_manifest": "../../__data__/extreme_decrease_support/before_sha256.json",
+  "git_diff_numstat": [
+    "9\t6\tassignments/assignment_1/analyze_results.py",
+    "2\t1\tassignments/assignment_1/ea_common.py",
+    "4\t3\tassignments/assignment_1/render_bodies.py",
+    "8\t1\tassignments/assignment_1/run_ea.py",
+    "8\t1\tassignments/assignment_1/run_random_search.py"
+  ]
+}

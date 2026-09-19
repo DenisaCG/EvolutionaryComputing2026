@@ -47,7 +47,8 @@ TOTAL_EVALS: int = (NUM_GENERATIONS + 1) * POP_SIZE
 
 # --- MUTATION SCHEDULE CONSTANTS --- #
 MUTATION_START: float = 0.8
-MUTATION_END: float = 0.2
+# MUTATION_END: float = 0.2  # Original dynamic-scheduler experiment
+MUTATION_END: float = 0.01  # Extreme-decrease sensitivity experiment
 
 
 def exponential_mutation_rate(
