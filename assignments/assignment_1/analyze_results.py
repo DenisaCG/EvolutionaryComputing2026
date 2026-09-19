@@ -193,8 +193,8 @@ def plot_final_fitness_violin(
 
     ax.set_xticks(positions)
     ax.set_xticklabels([LABELS[c] for c in conditions])
-    ax.set_ylabel(f"Final best-so-far fitness ({(NUM_GENERATIONS + 1) * POP_SIZE} evals)\nlower is better")
-    ax.set_title(f"Final-fitness distribution across {len(SEEDS)} independent seeds")
+    ax.set_ylabel("Best fitness")
+    ax.set_title("Final fitness distribution")
     ax.grid(axis="y", color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -269,15 +269,19 @@ def per_target_distance_analysis(
 
     ax.set_xticks(x)
     ax.set_xticklabels(target_names)
-    ax.set_xlabel("Target body")
-    ax.set_ylabel(
-        "Tree edit distance to target\n(mean ± std of each seed's best individual)",
-    )
-    ax.set_title("Per-target distance of each seed's best body")
+    ax.set_xlabel("Target morphology")
+    ax.set_ylabel("Tree edit distance to target")
+    ax.set_title("Best-body distance to target")
     ax.grid(axis="y", color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.legend(frameon=False)
+    # The bars run behind the legend, so it needs a fully opaque plate of its
+    # own - at 0.95 the bar colours still tint the swatches and read as data.
+    legend = ax.legend(
+        frameon=True, framealpha=1.0, facecolor="white", edgecolor="#cccccc",
+    )
+    legend.get_frame().set_linewidth(0.8)
+    legend.set_zorder(5)
     fig.tight_layout()
     fig.savefig(PLOTS_DIR / "per_target_distance.png", dpi=200)
     return manifest
@@ -709,9 +713,8 @@ def main(argv: list[str] | None = None) -> None:
         )
 
     ax.set_xlabel("Cumulative fitness evaluations")
-    ax.set_ylabel(f"Best-so-far fitness (mean ± std over {len(SEEDS)} seeds)\nlower is better")
-    ax.set_title("Convergence: mutation schedules and random search" if args.experiment in ("dynamic", "extreme")
-                 else "Convergence: mutation-only vs. mutation+crossover vs. random search")
+    ax.set_ylabel("Best fitness")
+    ax.set_title("Convergence")
     ax.grid(color="#dddddd", linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
