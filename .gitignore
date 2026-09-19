@@ -275,6 +275,6 @@ RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# Assignment 1 report figures - exception to the blanket *.png rule above,
-# so the README in this folder always has working image links.
+# Assignment 1 report figures - exception to the blanket *.png rule above
 !assignments/assignment_1/__results__/plots/*.png
+!assignments/assignment_1/results_dynamic_scheduler/plots/*.png
