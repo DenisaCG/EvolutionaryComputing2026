@@ -2,13 +2,6 @@
 
 # Third-party libraries
 import mujoco
-import numpy as np
-
-# Global constants
-SEED = 42
-
-# Global functions
-RNG = np.random.default_rng(SEED)
 
 
 def simple_runner(
@@ -31,11 +24,10 @@ def simple_runner(
     steps_per_loop : int, optional
         The number of simulation steps to take in each loop, by default 100
     """
-    # Reset state and time of simulation
+    # Reset state and time of simulation. This also zeroes data.ctrl, which
+    # a control callback registered via mujoco.set_mjcb_control can then
+    # read/write deterministically from the very first step.
     mujoco.mj_resetData(model, data)
-
-    # Define action specification and set policy
-    data.ctrl = RNG.normal(scale=0.1, size=model.nu)
 
     while data.time < duration:
         mujoco.mj_step(model, data, nstep=steps_per_loop)
