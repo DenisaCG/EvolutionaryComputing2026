@@ -14,7 +14,16 @@ from dataclasses import dataclass
 import mujoco as mj
 import numpy as np
 import numpy.typing as npt
+from ariel.utils.renderers import single_frame_renderer
 from ariel.utils.runners import simple_runner
+from PIL import Image
+
+# Every ariel world (ariel.simulation.environments._base_world.BaseWorld)
+# defines these two cameras in addition to the default top-down "ortho-cam"
+# that `single_frame_renderer` uses: an angled perspective view, useful for a
+# report figure that actually shows the terrain's shape (ramp, rugged bumps)
+# rather than a flat top-down silhouette.
+ANGLED_CAMERA_NAME = "pretty-cam"
 
 from bodies import build_robot, build_world
 from config import ExperimentConfig
@@ -157,3 +166,82 @@ def run_episode_trajectory(
     mj.set_mjcb_control(None)
 
     return np.array(trajectory)
+
+
+def render_environment_snapshot(config: ExperimentConfig) -> Image.Image:
+    """Static image of the world + spawned (unposed) robot, for the report.
+
+    Purely visual context (what does the Olympic Arena + this body actually
+    look like?) -- no controller is run, the robot is just spawned at
+    `config.spawn_pos` and the scene is rendered as-is.
+    """
+    mj.set_mjcb_control(None)
+
+    world = build_world()
+    robot = build_robot(config.body)
+    world.spawn(
+        robot.spec,
+        position=list(config.spawn_pos),
+        correct_collision_with_floor=True,
+    )
+
+    model = world.spec.compile()
+    data = mj.MjData(model)
+    mj.mj_resetData(model, data)
+    mj.mj_forward(model, data)
+
+    return single_frame_renderer(model, data, steps=1)
+
+
+def render_environment_angled(
+    config: ExperimentConfig,
+    camera: str | mj.MjvCamera = ANGLED_CAMERA_NAME,
+    width: int = 480,
+    height: int = 640,
+) -> Image.Image:
+    """Angled-perspective render of the world + spawned (unposed) robot.
+
+    `single_frame_renderer` only ever looks up the world's top-down
+    "ortho-cam", so an angled view needs its own renderer call. `camera` can
+    be another named camera every ariel world defines (`"pretty-cam"`, a
+    perspective view) or a custom `mujoco.MjvCamera` (e.g. a free camera at a
+    chosen azimuth/elevation) for a specific angle.
+    """
+    mj.set_mjcb_control(None)
+
+    world = build_world()
+    robot = build_robot(config.body)
+    world.spawn(
+        robot.spec,
+        position=list(config.spawn_pos),
+        correct_collision_with_floor=True,
+    )
+
+    model = world.spec.compile()
+    data = mj.MjData(model)
+    mj.mj_resetData(model, data)
+    mj.mj_forward(model, data)
+
+    with mj.Renderer(model, width=width, height=height) as renderer:
+        renderer.update_scene(data, camera=camera)
+        frame = renderer.render()
+
+    return Image.fromarray(frame)
+
+
+def free_camera(
+    azimuth: float,
+    elevation: float,
+    distance: float,
+    lookat: tuple[float, float, float],
+) -> mj.MjvCamera:
+    """Build a free (not world-defined) camera at a chosen angle, for variety
+    beyond the world's single built-in "pretty-cam" perspective.
+    """
+    camera = mj.MjvCamera()
+    camera.type = mj.mjtCamera.mjCAMERA_FREE
+    camera.azimuth = azimuth
+    camera.elevation = elevation
+    camera.distance = distance
+    camera.lookat[:] = lookat
+    return camera
