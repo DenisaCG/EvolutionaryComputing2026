@@ -29,7 +29,12 @@ from style_guidelines_plots import (  # noqa: E402
 )
 
 from config import ExperimentConfig  # noqa: E402
-from simulate import run_episode_trajectory  # noqa: E402
+from simulate import (  # noqa: E402
+    free_camera,
+    render_environment_angled,
+    render_environment_snapshot,
+    run_episode_trajectory,
+)
 
 DATA_ROOT = ASSIGNMENT_ROOT / "__data__"
 RESULTS_ROOT = ASSIGNMENT_ROOT / "results"
@@ -167,77 +172,149 @@ def plot_final_fitness_distribution(summary: pl.DataFrame, body: str) -> None:
 
 
 def plot_wall_clock(summary: pl.DataFrame, body: str) -> None:
-    """Wall-clock duration per run -- documents hardware feasibility."""
-    body_df = summary.filter(pl.col("body") == body).sort(["algorithm", "seed"])
+    """Wall-clock duration per algorithm -- box plot (not one bar per run,
+    which overlapped unreadably once there were 5 seeds per algorithm) with
+    individual seed durations overlaid as jittered points.
+    """
+    body_df = summary.filter(pl.col("body") == body)
     if body_df.is_empty():
         return
 
-    fig, ax = plt.subplots(figsize=(9, 5.5))
     algorithms = sorted(body_df["algorithm"].unique())
-    x_labels = []
-    values = []
-    colors = []
-    for i, algorithm in enumerate(algorithms):
-        alg_df = body_df.filter(pl.col("algorithm") == algorithm).sort("seed")
-        for row in alg_df.iter_rows(named=True):
-            x_labels.append(f"{ALGORITHM_LABELS.get(algorithm, algorithm)}\nseed {row['seed']}")
-            values.append(row["wall_clock_duration_s"] / 60.0)
-            colors.append(PALETTE[i])
+    data = [
+        (
+            body_df.filter(pl.col("algorithm") == alg)["wall_clock_duration_s"]
+            / 60.0
+        ).to_numpy()
+        for alg in algorithms
+    ]
 
-    ax.bar(range(len(values)), values, color=colors)
-    ax.set_xticks(range(len(values)))
-    ax.set_xticklabels(x_labels, fontsize=8)
+    fig, ax = plt.subplots(figsize=(7, 5.5))
+    bp = ax.boxplot(
+        data,
+        tick_labels=[ALGORITHM_LABELS.get(a, a) for a in algorithms],
+        patch_artist=True,
+        widths=0.5,
+    )
+    for patch, color in zip(bp["boxes"], PALETTE, strict=False):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.5)
+
+    rng = np.random.default_rng(0)
+    for i, values in enumerate(data, start=1):
+        jitter = rng.uniform(-0.08, 0.08, size=len(values))
+        ax.scatter(
+            np.full(len(values), i) + jitter,
+            values,
+            color=PALETTE[i - 1],
+            edgecolor="white",
+            linewidth=0.5,
+            zorder=3,
+        )
+
     ax.set_ylabel("Wall-clock duration (minutes)")
     decorate(
         fig,
         f"Per-Run Wall-Clock Time on {body.capitalize()}",
-        subtitle="Measured on the machine that produced this data (see each run's manifest.json)",
+        subtitle="One point per seed; measured on the machine that produced this "
+        "data (hardware specs in each run's manifest.json)",
     )
     _savefig(fig, body, "wall_clock_time")
 
 
 def plot_best_trajectory(summary: pl.DataFrame, body: str) -> None:
-    """(x, y) path of the single best genome found for this body, any algorithm/seed."""
+    """(x, y) path of the best genome from EVERY seed, one panel per algorithm.
+
+    Each panel overlays all 5 seeds' best-found trajectory (not just the
+    single best-of-all-runs) so seed-to-seed variability in the resulting
+    gait/path is visible, not just the single luckiest run.
+    """
     body_df = summary.filter(pl.col("body") == body)
     if body_df.is_empty():
         return
-    best_row = body_df.sort("best_fitness").row(0, named=True)
 
-    run_dir = (
-        DATA_ROOT
-        / f"{best_row['body']}__{best_row['algorithm']}"
-        / f"seed_{best_row['seed']}"
-    )
-    genome = json.loads((run_dir / "best_genome.json").read_text())
-    weights = np.array(genome["weights"])
+    algorithms = sorted(body_df["algorithm"].unique())
+    fig, axes = plt.subplots(1, len(algorithms), figsize=(7 * len(algorithms), 6), squeeze=False)
+    axes = axes[0]
 
-    config = ExperimentConfig(body=body, seed=best_row["seed"])
-    trajectory = run_episode_trajectory(config, weights)
+    config = ExperimentConfig(body=body, seed=0)
+    target_xy = (config.target_position[0], config.target_position[1])
 
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.plot(trajectory[:, 0], trajectory[:, 1], color=PALETTE[0], linewidth=1.5)
-    ax.scatter(*trajectory[0, :2], color=PALETTE[2], s=80, zorder=3, label="Spawn")
-    ax.scatter(
-        config.target_position[0],
-        config.target_position[1],
-        color=PALETTE[5],
-        marker="*",
-        s=200,
-        zorder=3,
-        label="Target",
-    )
-    ax.set_xlabel("x (m)")
-    ax.set_ylabel("y (m)")
-    ax.set_aspect("equal", adjustable="datalim")
-    legend_below(ax, ncol=2)
+    for ax, algorithm in zip(axes, algorithms, strict=False):
+        alg_df = body_df.filter(pl.col("algorithm") == algorithm).sort("seed")
+        for i, row in enumerate(alg_df.iter_rows(named=True)):
+            run_dir = DATA_ROOT / f"{body}__{algorithm}" / f"seed_{row['seed']}"
+            genome = json.loads((run_dir / "best_genome.json").read_text())
+            weights = np.array(genome["weights"])
+
+            seed_config = ExperimentConfig(body=body, seed=row["seed"])
+            trajectory = run_episode_trajectory(seed_config, weights)
+            color = PALETTE[i % len(PALETTE)]
+            ax.plot(
+                trajectory[:, 0],
+                trajectory[:, 1],
+                color=color,
+                linewidth=1.3,
+                label=f"seed {row['seed']}",
+            )
+            ax.scatter(*trajectory[0, :2], color=color, s=30, zorder=3)
+
+        ax.scatter(
+            *target_xy,
+            color="black",
+            marker="*",
+            s=220,
+            zorder=4,
+            label="Target",
+        )
+        ax.set_xlabel("x (m)")
+        ax.set_ylabel("y (m)")
+        ax.set_title(ALGORITHM_LABELS.get(algorithm, algorithm), fontsize=13)
+        ax.set_aspect("equal", adjustable="datalim")
+
+    # Seed colors/labels are identical across panels (both algorithms run the
+    # same 5 seeds), so one shared legend (built from the first panel) covers
+    # both -- legend_below queues a single figure-level legend, so calling it
+    # per-axis would just have the last call silently win.
+    legend_below(axes[0], ncol=6)
+
     decorate(
         fig,
-        f"Best {body.capitalize()} Trajectory "
-        f"({ALGORITHM_LABELS.get(best_row['algorithm'], best_row['algorithm'])}, "
-        f"seed {best_row['seed']})",
-        subtitle=f"Fitness = {best_row['best_fitness']:.4f} (lower is better)",
+        f"Best-Per-Seed Trajectories on {body.capitalize()}",
+        subtitle="One line per seed (its best-found genome); dot = spawn, star = target. "
+        "Axes are world-frame meters.",
+        has_legend=True,
     )
     _savefig(fig, body, "best_trajectory")
+
+
+def plot_environment_snapshots(body: str) -> None:
+    """Renders of the world + spawned (unposed) body: top-down plus two
+    angled perspectives, all under one `environment_snapshots/` directory.
+    The top-down view shows terrain layout clearly but flattens the
+    ramp/rugged bumps; the angled ones show the actual 3D shape of the course.
+    """
+    config = ExperimentConfig(body=body, seed=0)
+    out_dir = RESULTS_ROOT / body / "environment_snapshots"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    top_down_image = render_environment_snapshot(config)
+    top_down_path = out_dir / "environment_snapshot.png"
+    top_down_image.save(top_down_path)
+    print(f"[plots] wrote {top_down_path}")
+
+    pretty_cam_image = render_environment_angled(config, camera="pretty-cam")
+    pretty_cam_path = out_dir / "pretty_cam.png"
+    pretty_cam_image.save(pretty_cam_path)
+    print(f"[plots] wrote {pretty_cam_path}")
+
+    side_camera = free_camera(
+        azimuth=120, elevation=-20, distance=4.0, lookat=(0.5, 0.0, 0.2)
+    )
+    side_image = render_environment_angled(config, camera=side_camera)
+    side_path = out_dir / "side_angle.png"
+    side_image.save(side_path)
+    print(f"[plots] wrote {side_path}")
 
 
 def main() -> None:
@@ -259,6 +336,7 @@ def main() -> None:
         plot_final_fitness_distribution(summary, body)
         plot_wall_clock(summary, body)
         plot_best_trajectory(summary, body)
+        plot_environment_snapshots(body)
 
 
 if __name__ == "__main__":
