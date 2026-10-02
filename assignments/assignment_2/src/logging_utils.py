@@ -97,19 +97,96 @@ class RunLogger:
 
 
 def _hardware_info() -> dict[str, Any]:
-    return {
+    """Hardware specs relevant to interpreting wall-clock timing.
+
+    Wall-clock duration is only meaningful relative to the machine that
+    produced it, so this records CPU model, core counts, and total RAM in
+    addition to OS/platform -- not just `platform.processor()`, which on
+    Apple Silicon only ever returns the generic string "arm".
+    """
+    info: dict[str, Any] = {
         "platform": platform.platform(),
-        "processor": platform.processor() or platform.machine(),
         "machine": platform.machine(),
-        "cpu_count": _cpu_count(),
+        "logical_cpu_count": _cpu_count(),
         "python_implementation": platform.python_implementation(),
     }
+    info.update(_cpu_and_memory_info())
+    return info
 
 
 def _cpu_count() -> int | None:
     import os
 
     return os.cpu_count()
+
+
+def _cpu_and_memory_info() -> dict[str, Any]:
+    """CPU model/core-type breakdown and total RAM.
+
+    No identifying/sensitive fields (serial number, hardware UUID) are
+    collected -- only what's needed to judge compute cost.
+    """
+    system = platform.system()
+    if system == "Darwin":
+        return _macos_hardware_info()
+    if system == "Linux":
+        return _linux_hardware_info()
+    return {"cpu_model": platform.processor() or "unknown", "total_ram_gb": None}
+
+
+def _macos_hardware_info() -> dict[str, Any]:
+    try:
+        raw = subprocess.check_output(
+            ["system_profiler", "SPHardwareDataType", "-json"],
+            stderr=subprocess.DEVNULL,
+        )
+        hw = json.loads(raw)["SPHardwareDataType"][0]
+    except (subprocess.CalledProcessError, FileNotFoundError, KeyError, IndexError):
+        return {"cpu_model": "unknown", "total_ram_gb": None}
+
+    # "number_processors" looks like "proc 10:8:2:0" -> total:performance:efficiency.
+    core_breakdown = hw.get("number_processors", "")
+    parts = core_breakdown.replace("proc ", "").split(":")
+    cores = {}
+    if len(parts) >= 3:
+        cores = {
+            "total_cores": int(parts[0]),
+            "performance_cores": int(parts[1]),
+            "efficiency_cores": int(parts[2]),
+        }
+
+    return {
+        "cpu_model": hw.get("chip_type"),
+        "machine_model": hw.get("machine_model"),
+        "machine_name": hw.get("machine_name"),
+        "total_ram": hw.get("physical_memory"),
+        **cores,
+    }
+
+
+def _linux_hardware_info() -> dict[str, Any]:
+    cpu_model = "unknown"
+    try:
+        with Path("/proc/cpuinfo").open() as f:
+            for line in f:
+                if line.lower().startswith("model name"):
+                    cpu_model = line.split(":", 1)[1].strip()
+                    break
+    except OSError:
+        pass
+
+    total_ram_gb = None
+    try:
+        with Path("/proc/meminfo").open() as f:
+            for line in f:
+                if line.startswith("MemTotal"):
+                    kb = int(line.split()[1])
+                    total_ram_gb = round(kb / (1024**2), 1)
+                    break
+    except OSError:
+        pass
+
+    return {"cpu_model": cpu_model, "total_ram_gb": total_ram_gb}
 
 
 def _software_versions() -> dict[str, str]:
