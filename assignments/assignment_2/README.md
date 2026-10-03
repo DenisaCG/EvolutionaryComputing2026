@@ -2,13 +2,21 @@
 
 **Research question:** *Does adding a restart strategy with increasing
 population size improve CMA-ES performance?* (IPOP-CMA-ES, Auger & Hansen,
-CEC 2005 — see `cec2005ipopcmaes.pdf`.)
+CEC 2005 — [paper](https://www.cmap.polytechnique.fr/~nikolaus.hansen/cec2005ipopcmaes.pdf).)
 
 This codebase currently implements the **basic (mu_W, lambda)-CMA-ES**
-(no restart yet) plus a full, reusable experiment pipeline — config, logging,
-plotting — that the restart variant plugs into without restructuring
-anything. Two bodies (`turtle`, `iguana`) are run side by side right now to
+plus a reusable experiment pipeline — config, logging, plotting — and an
+IPOP restart wrapper at the library level. The existing experiment scripts
+still run basic CMA-ES and random search. Two bodies (`turtle`, `iguana`) are run side by side right now to
 assess feasibility and results before the team restricts to one.
+
+Arshana Update: Added `src/ipop_cma_es.py` with `IPOPCMAES`, a wrapper around
+the existing handwritten optimizer. Following Auger & Hansen (2005), Section 2,
+a local stopping criterion triggers a fresh CMA-ES run with twice the population.
+The wrapper preserves the overall best solution and cumulative evaluation count
+under one shared budget. See `src/README.md` for initialization and API details.
+This addition has not been executed or tested; no experiments or figures were
+generated. Runner/configuration/analysis integration remains future work.
 
 ## What's implemented
 
@@ -18,6 +26,8 @@ assess feasibility and results before the team restricts to one.
   touching MuJoCo.
 - A **random-search baseline** (`src/random_search.py`), matched to the same
   total evaluation budget as its paired CMA-ES run.
+- Arshana Update: **IPOP restart logic** (`src/ipop_cma_es.py`), available as
+  an ask/tell library class; not yet selected by an experiment runner.
 - A **combined fitness function** (`src/fitness.py`): a survival gate (did
   the robot fall?) followed by a direct-path score (distance to target,
   penalized for wasted movement), built on
@@ -30,10 +40,9 @@ assess feasibility and results before the team restricts to one.
 
 ## What's NOT implemented yet
 
-- The **restart-with-increasing-population** strategy itself (IPOP) — the
-  actual research question. `src/cma_es.py` is deliberately structured so
-  that a restart is just "construct a new `CMAES` with `lambda_` doubled",
-  without modifying the class.
+- Arshana Update: **IPOP experiment integration and evaluation** — the strategy
+  now exists, but a dedicated runner/output condition and comparison runs still
+  need to be added before the research question can be answered.
 - A final choice of body/world — both `turtle` and `iguana` (with the fixed
   Olympic Arena world) are run in parallel for now.
 
@@ -61,7 +70,7 @@ uv run python analysis/make_plots.py
 
 ```
 src/            core library (config, bodies, controller, simulate, fitness,
-                cma_es, random_search, logging_utils) — see src/README.md
+                cma_es, ipop_cma_es, random_search, logging_utils) — see src/README.md
 experiments/    CLI runners (benchmark, run_cma_es, run_random_search)
                 — see experiments/README.md
 analysis/       aggregate_results.py, make_plots.py — see analysis/README.md
@@ -79,8 +88,8 @@ results/        generated plots, one subfolder per body
   full rationale.
 - **Population size (`lambda`) defaults to the paper's formula**
   (`4 + floor(3*ln(n))`) but is fully configurable per run — this is both
-  the correct starting point for the future restart variant (which must
-  start from this default and double it) and the axis a manual
+  the default starting point for the restart wrapper (which doubles it
+  on each restart) and the axis a manual
   population-size sweep can vary.
 - **Fitness combines both given metrics** (fall penalty + direct-path
   distance/efficiency) into one score, rather than running them as separate

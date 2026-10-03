@@ -1,5 +1,19 @@
 # `analysis/` — aggregation and plotting
 
+Arshana Update: `../src/ipop_cma_es.py` now implements the IPOP restart
+strategy at the library level. No IPOP run data or new plots were generated;
+the existing results still compare basic CMA-ES with random search.
+
+The wrapper returns the existing `GenerationRecord` schema with cumulative
+evaluation/generation counters across restarts, so a future runner can use
+the same generation CSV format. Restart events are available separately via
+`restart_history`. Analysis code is unchanged: an `ipop_cma_es` condition
+fits the aggregator's directory-name pattern, but plot labels/titles and the
+CMA-only sigma diagnostic still need updating for an IPOP comparison.
+Restarts occur at different evaluation counts across seeds; the current
+exact-count grouping does not align those traces onto a common evaluation
+grid. That alignment must be addressed before interpreting cross-seed means.
+
 Run after `experiments/` has produced at least one run per body/algorithm.
 
 - **`aggregate_results.py`** — scans every

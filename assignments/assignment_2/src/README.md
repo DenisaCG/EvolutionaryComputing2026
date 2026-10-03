@@ -25,8 +25,8 @@ Everything here is imported by the scripts in `experiments/` and
   (distance + wasted-path penalty) into the single score CMA-ES optimizes.
 - **`cma_es.py`** — the hand-written (mu_W, lambda)-CMA-ES: `ask()`/`tell()`
   interface, the paper's default parameter formulas, and its 5 default
-  stopping criteria. No restart logic (that's a later addition built on top
-  of this class, not a change to it). Also `RandomSearch`'s `GenerationRecord`
+  stopping criteria. Restart logic lives separately in `ipop_cma_es.py`.
+  Also `RandomSearch`'s `GenerationRecord`
   type, shared so both algorithms log identically.
 - **`random_search.py`** — the baseline: i.i.d. N(0, sigma0) sampling,
   matched to the same evaluation budget as its paired CMA-ES run.
@@ -36,6 +36,57 @@ Everything here is imported by the scripts in `experiments/` and
   run.
 
 ## Design choices worth knowing
+
+Arshana Update: Added `ipop_cma_es.py` containing `IPOPCMAES` and
+`RestartRecord`. It composes the existing `CMAES` without altering its update
+equations or stopping criteria. The algorithmic source is Auger & Hansen,
+*A Restart CMA Evolution Strategy With Increasing Population Size*, CEC 2005,
+pp. 1769–1776, Sections 2–3
+([paper](https://www.cmap.polytechnique.fr/~nikolaus.hansen/cec2005ipopcmaes.pdf)).
+
+- Population sizes follow `lambda0, 2*lambda0, 4*lambda0, ...`; `lambda0`
+  defaults to `4 + floor(3*ln(n))`, with an optional override.
+- After `tell()`, the existing local stopping criteria schedule a restart.
+  The next `ask()` creates a fresh optimizer: identity covariance, zero
+  evolution paths, reset local history, restored `sigma0`, and strategy
+  parameters recalculated for the larger population. No fixed restart interval
+  is added; a short budget may allow no restarts at all.
+- Initialization is adapted to unbounded NN weights: the first run starts at
+  `mean0` (zero by default), matching basic CMA-ES; subsequent means are fresh
+  draws from `N(mean0, sigma0**2 I)`. The paper instead draws means uniformly
+  in a bounded search region. We retain the task's `sigma0=0.5` default.
+  Restart random streams are reproducible from the supplied seed. Restarts
+  do not initialize at the previous winner.
+- One budget covers all runs. Only complete populations are evaluated; the
+  search stops if the next population, including a pending doubling, cannot
+  fit. Unused evaluations can remain. The wrapper never overshoots its budget.
+- `best_genotype`/`best_fitness` retain the overall winner. `tell()` returns
+  the existing `GenerationRecord`, with cumulative generations/evaluations
+  but generation-local statistics. `restart_history` records each launched
+  restart's cause, population sizes, and cumulative counters.
+
+Arshana Update: Library usage sketch (documentation only; not executed):
+
+```python
+from ipop_cma_es import IPOPCMAES
+
+optimizer = IPOPCMAES(n=n, budget=config.budget, lambda_=config.lambda_,
+                     sigma0=config.sigma0, seed=config.seed)
+while optimizer.stopping_reason() is None:
+    candidates = optimizer.ask()
+    fitnesses = np.array([evaluate(config, x) for x in candidates])
+    record = optimizer.tell(fitnesses)
+    # An existing RunLogger can accept record via log_generation(record).
+```
+
+The sketch assumes the runner has supplied `n`, `config`, `np`, and `evaluate`.
+Call `ask()` and `tell()` alternately; fitnesses must be finite and match the
+sampled population. `stopping_reason()` takes no arguments and reports only
+global termination (`budget_exhausted` or `insufficient_budget_for_population`).
+`lambda_` describes the current population, while `next_lambda` includes a
+scheduled restart. A budget smaller than the initial population performs no
+evaluations and leaves `best_genotype=None`. No code or tests were run for
+this addition.
 
 - **CMA-ES is not built on `ariel.ec`'s `EA`/`EAOperation` engine.** That
   engine is a generational GA pipeline (parent-selection -> crossover ->
