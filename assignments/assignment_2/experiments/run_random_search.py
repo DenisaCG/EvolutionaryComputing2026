@@ -17,11 +17,10 @@ import argparse
 import sys
 from pathlib import Path
 
-import numpy as np
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from config import ExperimentConfig  # noqa: E402
+from ec_engine import build_ea  # noqa: E402
 from fitness import evaluate  # noqa: E402
 from logging_utils import RunLogger  # noqa: E402
 from random_search import RandomSearch  # noqa: E402
@@ -67,10 +66,17 @@ def main() -> None:
         f"batch_size={args.batch_size} budget={config.budget}"
     )
 
+    history: list = []
+    ea = build_ea(
+        search,
+        lambda x: evaluate(config, x),
+        config.run_dir("random_search") / "database.db",
+        history,
+    )
+
     while search.evals_used < config.budget:
-        candidates = search.ask()
-        fitnesses = np.array([evaluate(config, x) for x in candidates])
-        record = search.tell(fitnesses)
+        ea.step()
+        record, _ = history[-1]
         logger.log_generation(record)
         print(
             f"  batch {record.generation:4d}  evals {record.evals_used:5d}  "

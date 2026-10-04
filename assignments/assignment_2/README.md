@@ -70,7 +70,8 @@ uv run python analysis/make_plots.py
 
 ```
 src/            core library (config, bodies, controller, simulate, fitness,
-                cma_es, ipop_cma_es, random_search, logging_utils) — see src/README.md
+                cma_es, ipop_cma_es, ec_engine, random_search, logging_utils)
+                — see src/README.md
 experiments/    CLI runners (benchmark, run_cma_es, run_random_search)
                 — see experiments/README.md
 analysis/       aggregate_results.py, make_plots.py — see analysis/README.md
@@ -81,11 +82,12 @@ results/        generated plots, one subfolder per body
 
 ## Key design decisions (and why)
 
-- **CMA-ES is hand-written**, not built on `ariel.ec`'s generational
-  `EA`/`EAOperation` pipeline — that pipeline is shaped for
-  parent-selection/crossover/mutation/survivor-selection GAs, which CMA-ES's
-  ask/tell, mean/covariance update doesn't fit. See `src/README.md` for the
-  full rationale.
+- **Built on `ariel.ec`, with a hand-written CMA-ES update.** Each
+  generation runs as `ariel.ec` `EAOperation`s (sample -> evaluate ->
+  update) inside `ariel.ec.EA`, which also stores every individual in an
+  SQLite database. The CMA-ES mean/covariance update itself is our own
+  (`src/cma_es.py`), since `ariel.ec`'s GA operators don't fit it. See
+  `src/README.md` for the full rationale.
 - **Population size (`lambda`) defaults to the paper's formula**
   (`4 + floor(3*ln(n))`) but is fully configurable per run — this is both
   the default starting point for the restart wrapper (which doubles it

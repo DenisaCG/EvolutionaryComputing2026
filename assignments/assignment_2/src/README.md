@@ -28,6 +28,9 @@ Everything here is imported by the scripts in `experiments/` and
   stopping criteria. Restart logic lives separately in `ipop_cma_es.py`.
   Also `RandomSearch`'s `GenerationRecord`
   type, shared so both algorithms log identically.
+- **`ec_engine.py`** — `build_ea()`: wraps any ask/tell strategy (CMA-ES,
+  IPOP-CMA-ES, random search) as `ariel.ec` `EAOperation`s run by
+  `ariel.ec.EA`, which also persists every individual to `database.db`.
 - **`random_search.py`** — the baseline: i.i.d. N(0, sigma0) sampling,
   matched to the same evaluation budget as its paired CMA-ES run.
 - **`logging_utils.py`** — `RunLogger`: writes the per-generation CSV, the
@@ -88,13 +91,17 @@ scheduled restart. A budget smaller than the initial population performs no
 evaluations and leaves `best_genotype=None`. No code or tests were run for
 this addition.
 
-- **CMA-ES is not built on `ariel.ec`'s `EA`/`EAOperation` engine.** That
-  engine is a generational GA pipeline (parent-selection -> crossover ->
-  mutation -> survivor-selection); CMA-ES's ask/tell, mean/covariance-matrix
-  update doesn't map onto it, so forcing it through would add complexity
-  without benefit. `ariel.ec.set_seed` is likewise unused — it only reseeds
-  RNG state private to `ariel.ec`'s own generator/mutator/crossover
-  functions, none of which are used here.
+- **Runs are driven by `ariel.ec`'s `EA` engine; the strategy update is our
+  own.** `ec_engine.py` expresses one generation as three `EAOperation`s
+  (`sample` -> `evaluate` -> `update`), so `ariel.ec` provides the
+  `Individual`/`Population` data model, the generational loop, and an SQLite
+  database of every evaluated individual (`database.db` per run). The
+  mean/sigma/covariance update stays hand-written in `cma_es.py`, since
+  `ariel.ec`'s selection/crossover/mutation operators don't map onto
+  CMA-ES's distribution update. Each individual lives one generation,
+  matching non-elitist (mu, lambda) selection. `ariel.ec.set_seed` is unused
+  — it only reseeds RNG state private to `ariel.ec`'s own
+  generator/mutator/crossover functions, none of which are used here.
 - **No boundary handling on NN weights.** The paper's boundary-penalty
   mechanism assumes a bounded `[A, B]^n` domain (its benchmark functions all
   have one); NN weights don't have a natural bound, so this is a documented

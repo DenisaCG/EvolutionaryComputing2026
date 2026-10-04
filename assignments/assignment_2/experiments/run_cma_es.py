@@ -7,7 +7,7 @@ Example
 
 Run once per seed (repeat with --seed 0..4 for the assignment's required
 >=5 independent runs). Output goes to
-`__data__/<body>__cma_es/seed_<n>/{generations.csv, best_genome.json, manifest.json}`.
+`__data__/<body>__cma_es/seed_<n>/{generations.csv, best_genome.json, manifest.json, database.db}`.
 """
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from cma_es import CMAES  # noqa: E402
 from config import ExperimentConfig  # noqa: E402
+from ec_engine import build_ea  # noqa: E402
 from fitness import evaluate  # noqa: E402
 from logging_utils import RunLogger  # noqa: E402
 from simulate import genotype_length_for  # noqa: E402
@@ -72,11 +73,18 @@ def main() -> None:
         f"lambda={cma.lambda_} mu={cma.params.mu} budget={config.budget}"
     )
 
+    history: list = []
+    ea = build_ea(
+        cma,
+        lambda x: evaluate(config, x),
+        config.run_dir("cma_es") / "database.db",
+        history,
+    )
+
     termination_reason = "budget_exhausted"
     while cma.evals_used < config.budget:
-        candidates = cma.ask()
-        fitnesses = np.array([evaluate(config, x) for x in candidates])
-        record = cma.tell(fitnesses)
+        ea.step()
+        record, fitnesses = history[-1]
         logger.log_generation(record)
         print(
             f"  gen {record.generation:4d}  evals {record.evals_used:5d}  "
