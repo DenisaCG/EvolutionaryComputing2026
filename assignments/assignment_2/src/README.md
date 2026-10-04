@@ -20,9 +20,10 @@ Everything here is imported by the scripts in `experiments/` and
   per-step path length / minimum core height (needed by the fitness
   function), then calls `simple_runner`. Also `run_episode_trajectory()`,
   a separate post-hoc replay used only for the trajectory plot.
-- **`fitness.py`** — combines `ariel.simulation.tasks.targeted_locomotion`'s
-  `fitness_survival_and_locomotion` (fall penalty) and `fitness_direct_path`
-  (distance + wasted-path penalty) into the single score CMA-ES optimizes.
+- **`fitness.py`** — `ariel.simulation.tasks.targeted_locomotion`'s
+  `fitness_survival_and_locomotion`: change in planar distance to the target,
+  or a flat penalty of 10 if the core dropped below 0.05 m. Path length is
+  still tracked by `simulate.py` but no longer used in the score.
 - **`cma_es.py`** — the hand-written (mu_W, lambda)-CMA-ES: `ask()`/`tell()`
   interface, the paper's default parameter formulas, and its 5 default
   stopping criteria. Restart logic lives separately in `ipop_cma_es.py`.

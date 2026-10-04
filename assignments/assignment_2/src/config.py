@@ -43,6 +43,8 @@ class ExperimentConfig:
     fall_height_threshold : float
         Minimum core height (m) tolerated during an episode before the
         survival penalty in `fitness_survival_and_locomotion` kicks in.
+        Recorded for the manifest only: ariel hardcodes 0.05 in that
+        function, so changing this value has no effect.
     lambda_ : int or None
         CMA-ES population size. `None` means "use the paper's default
         formula", computed once the genotype length `n` is known

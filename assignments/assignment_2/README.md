@@ -28,10 +28,10 @@ generated. Runner/configuration/analysis integration remains future work.
   total evaluation budget as its paired CMA-ES run.
 - Arshana Update: **IPOP restart logic** (`src/ipop_cma_es.py`), available as
   an ask/tell library class; not yet selected by an experiment runner.
-- A **combined fitness function** (`src/fitness.py`): a survival gate (did
-  the robot fall?) followed by a direct-path score (distance to target,
-  penalized for wasted movement), built on
-  `ariel.simulation.tasks.targeted_locomotion`'s existing functions.
+- A **fitness function** (`src/fitness.py`): `ariel`'s
+  `fitness_survival_and_locomotion` — change in planar distance to the
+  target, or a flat penalty of 10 if the core drops below 0.05 m (falling
+  off the arena).
 - Full **reproducibility logging** per run: per-generation CSV, best genome,
   and a manifest recording hardware, software versions, git commit, config,
   timing, and why the run stopped.
@@ -93,9 +93,14 @@ results/        generated plots, one subfolder per body
   the default starting point for the restart wrapper (which doubles it
   on each restart) and the axis a manual
   population-size sweep can vary.
-- **Fitness combines both given metrics** (fall penalty + direct-path
-  distance/efficiency) into one score, rather than running them as separate
-  experiment conditions.
+- **Fitness is distance reduced plus a fall penalty**
+  (`fitness_survival_and_locomotion`). With a fixed spawn and target it ranks
+  controllers exactly like the template's plain distance to target. The
+  earlier `fitness_direct_path` wasted-path penalty was dropped: path length
+  summed per physics step counts the turtle's crawling wobble as waste, so
+  most random controllers scored worse than standing still (17/20 in a
+  check), and the straight +x route to the target already rewards a direct
+  path.
 - **Evaluation budget is sized empirically** via `benchmark_eval_time.py`
   rather than assumed, since the paper's own budget (`n * 10^4` evaluations)
   is calibrated for cheap analytic functions, not ~10s MuJoCo rollouts. On an
