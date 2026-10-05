@@ -30,7 +30,7 @@ All runners only evaluate full generations, so they never exceed `--budget`.
 
 ```bash
 # 2-seed round, then the same command with --seeds 0 1 2 3 4
-python experiments/run_sweep.py --experiment ipop_l10_b8000 --seeds 0 1 \
+python experiments/run_sweep.py --experiment ipop_l10_b8000_v2 --seeds 0 1 \
     --budget 8000 --lambda0 10 --jobs 6
 ```
 

@@ -48,7 +48,7 @@ def probe_dimensions(config: ExperimentConfig) -> tuple[int, int]:
     model once before the genotype length (and CMA-ES's `n`) is known.
     """
     mj.set_mjcb_control(None)
-    world = build_world()
+    world = build_world(config.terrain_seed)
     robot = build_robot(config.body)
     world.spawn(
         robot.spec,
@@ -78,7 +78,7 @@ def run_episode(
     """Simulate one episode with `flat_weights` and return its raw metrics."""
     mj.set_mjcb_control(None)
 
-    world = build_world()
+    world = build_world(config.terrain_seed)
     robot = build_robot(config.body)
     world.spawn(
         robot.spec,
@@ -145,7 +145,7 @@ def run_episode_trajectory(
     """
     mj.set_mjcb_control(None)
 
-    world = build_world()
+    world = build_world(config.terrain_seed)
     robot = build_robot(config.body)
     world.spawn(
         robot.spec,
@@ -188,7 +188,7 @@ def render_environment_snapshot(config: ExperimentConfig) -> Image.Image:
     """
     mj.set_mjcb_control(None)
 
-    world = build_world()
+    world = build_world(config.terrain_seed)
     robot = build_robot(config.body)
     world.spawn(
         robot.spec,
@@ -220,7 +220,7 @@ def render_environment_angled(
     """
     mj.set_mjcb_control(None)
 
-    world = build_world()
+    world = build_world(config.terrain_seed)
     robot = build_robot(config.body)
     world.spawn(
         robot.spec,

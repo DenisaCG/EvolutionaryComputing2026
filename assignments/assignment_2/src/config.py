@@ -48,6 +48,11 @@ class ExperimentConfig:
         survival penalty in `fitness_survival_and_locomotion` kicks in.
         Recorded for the manifest only: ariel hardcodes 0.05 in that
         function, so changing this value has no effect.
+    terrain_seed : int or None
+        Seed for the Olympic Arena's rugged-terrain Perlin noise (see
+        `bodies.build_world`), so the world is identical in every
+        evaluation. `None` = ariel's default, a new random terrain per
+        evaluation (the setup of the `ipop_l10_b8000` pilot).
     lambda_ : int or None
         CMA-ES population size. `None` means "use the paper's default
         formula", computed once the genotype length `n` is known
@@ -84,6 +89,7 @@ class ExperimentConfig:
     spawn_pos: tuple[float, float, float] = (-0.8, 0.0, 0.0)
     target_position: tuple[float, float, float] = (5.0, 0.0, 0.5)
     fall_height_threshold: float = 0.05
+    terrain_seed: int | None = 0
     lambda_: int | None = None
     budget: int = 1500
     sigma0: float = 0.5

@@ -91,6 +91,9 @@ class Plotter:
             sim_duration=c["sim_duration"],
             spawn_pos=tuple(c["spawn_pos"]),
             target_position=tuple(c["target_position"]),
+            # Manifests from before the terrain fix have no terrain_seed: their
+            # runs saw random terrain, so replays can't reproduce them exactly.
+            terrain_seed=c.get("terrain_seed"),
         )
 
     def _initial_distance(self, body: str) -> float:

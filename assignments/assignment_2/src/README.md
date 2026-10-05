@@ -10,7 +10,10 @@ Everything here is imported by the scripts in `experiments/` and
   through everything else.
 - **`bodies.py`** — maps a body name (`"turtle"` / `"iguana"`) to the ariel
   prebuilt-robot factory that constructs it, and builds the (fixed) Olympic
-  Arena world. Add a new body here only.
+  Arena world. The arena's rugged terrain comes from unseeded Perlin noise in
+  ariel, which would give new bumps in every evaluation; `build_world` seeds
+  it with `config.terrain_seed` (runtime substitution, ariel unchanged) so
+  every evaluation sees the same terrain. Add a new body here only.
 - **`controller.py`** — the NN controller: its inputs (hinge angles, a
   sin/cos clock at `clock_hz`, and the bearing to the target relative to the
   core's heading), the forward pass (input -> tanh hidden -> tanh output,

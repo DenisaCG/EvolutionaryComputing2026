@@ -35,6 +35,11 @@ python analysis/aggregate_results.py --experiment ipop_l10_b8000
 python analysis/make_plots.py --experiment ipop_l10_b8000
 ```
 
+`results/ipop_l10_b8000/` is the 2-seed pilot of the IPOP experiment, run
+before two fixes: random rugged terrain per evaluation (now seeded) and a
+fixed 25-generation stagnation window (now K = 10 + ceil(4.5 n / lambda)).
+Use it as the tuning record, not as final results.
+
 `results/turtle/` and `results/iguana/` hold the earlier CMA-ES vs. random
 search plots (old fitness/controller, 10 s episodes, lambda = 25); they are
 not comparable with the IPOP experiment.

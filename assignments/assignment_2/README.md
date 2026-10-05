@@ -25,6 +25,10 @@ equal evaluation budget: CMA-ES (no restarts), IPOP-CMA-ES, and random search.
 - A **controller** (`src/controller.py`): feedforward NN (hinge angles, a
   sin/cos clock at 1.3 Hz, and the bearing to the target as inputs; one
   hidden layer of 6 tanh units; biases), 199 weights for the turtle.
+- A **fixed world**: the Olympic Arena with its rugged terrain seeded
+  (`terrain_seed = 0`, `src/bodies.py`). Without this, ariel generates new
+  random terrain every time the world is built, i.e. every evaluation, which
+  made fitness noisy for robots reaching the rugged section.
 - A **fitness function** (`src/fitness.py`): `ariel`'s
   `fitness_survival_and_locomotion` — change in planar distance to the
   target, or a flat penalty of 10 if the core drops below 0.05 m (falling
@@ -45,12 +49,12 @@ cd assignments/assignment_2
 uv run pytest tests/
 
 # 2. All conditions x seeds in parallel (see experiments/README.md).
-uv run python experiments/run_sweep.py --experiment ipop_l10_b8000 --seeds 0 1 \
+uv run python experiments/run_sweep.py --experiment ipop_l10_b8000_v2 --seeds 0 1 \
     --budget 8000 --lambda0 10
 
-# 3. Aggregate and plot -> results/ipop_l10_b8000/
-uv run python analysis/aggregate_results.py --experiment ipop_l10_b8000
-uv run python analysis/make_plots.py --experiment ipop_l10_b8000
+# 3. Aggregate and plot -> results/ipop_l10_b8000_v2/
+uv run python analysis/aggregate_results.py --experiment ipop_l10_b8000_v2
+uv run python analysis/make_plots.py --experiment ipop_l10_b8000_v2
 ```
 
 ## Directory layout
