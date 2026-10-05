@@ -111,6 +111,14 @@ class CMAES:
         for NN weights, unlike the paper's benchmark functions).
     seed : int or None
         Seeds this instance's own RNG (independent of any ariel.ec RNG).
+    stagnation_gens : int or None
+        If set, adds a task-specific `stagnation` stopping criterion: fires
+        when the best-so-far fitness improved by less than `stagnation_tol`
+        over the last `stagnation_gens` generations. `None` (default) keeps
+        only the paper's 5 criteria.
+    stagnation_tol : float
+        Minimum improvement (fitness units; metres for our fitness) that
+        counts as progress for the `stagnation` criterion.
     """
 
     def __init__(
@@ -120,6 +128,8 @@ class CMAES:
         sigma0: float = 0.5,
         mean0: FloatArray | None = None,
         seed: int | None = None,
+        stagnation_gens: int | None = None,
+        stagnation_tol: float = 0.01,
     ) -> None:
         self.n = n
         resolved_lambda = lambda_ if lambda_ is not None else default_lambda(n)
@@ -137,6 +147,8 @@ class CMAES:
         self.generation = 0
         self.evals_used = 0
         self.tol_x = 1e-12 * sigma0
+        self.stagnation_gens = stagnation_gens
+        self.stagnation_tol = stagnation_tol
 
         self.best_genotype: FloatArray | None = None
         self.best_fitness = math.inf
@@ -247,6 +259,7 @@ class CMAES:
         Criteria (Section 2 of the paper, with its published erratum applied
         to `noeffectcoord`: "any coordinate", not "each"):
         equalfunvalhist/Tolfun, TolX, noeffectaxis, noeffectcoord, conditioncov.
+        Plus the optional task-specific `stagnation` criterion (see __init__).
         """
         n, sigma, C, D, B = self.n, self.sigma, self.C, self.D, self.B
 
@@ -278,5 +291,15 @@ class CMAES:
         eigvals = D**2
         if eigvals.max() / eigvals.min() > 1e14:
             return "conditioncov"
+
+        # Not in the paper: equalfunvalhist's 1e-12 tolerance and
+        # 10 + 30n/lambda window are sized for cheap benchmark functions and
+        # never fire within an affordable MuJoCo budget. Same idea, scaled
+        # to the task: best-so-far improved by < stagnation_tol in K gens.
+        k = self.stagnation_gens
+        if k is not None and len(history) > k:
+            best_so_far = np.minimum.accumulate(history)
+            if best_so_far[-k - 1] - best_so_far[-1] < self.stagnation_tol:
+                return "stagnation"
 
         return None

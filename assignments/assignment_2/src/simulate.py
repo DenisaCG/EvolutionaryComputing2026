@@ -27,7 +27,7 @@ ANGLED_CAMERA_NAME = "pretty-cam"
 
 from bodies import build_robot, build_world
 from config import ExperimentConfig
-from controller import genotype_length, nn_controller, unflatten
+from controller import controller_inputs, genotype_length, nn_controller, unflatten
 
 
 @dataclass(frozen=True)
@@ -43,9 +43,9 @@ class EpisodeMetrics:
 def probe_dimensions(config: ExperimentConfig) -> tuple[int, int]:
     """Build one instance of the world+robot to read (input_size, output_size).
 
-    `input_size = len(data.qpos)` and `output_size = model.nu` both depend on
-    the chosen body, so they must be read from a compiled model once before
-    the genotype length (and CMA-ES's `n`) is known.
+    `input_size` (length of `controller_inputs`) and `output_size = model.nu`
+    both depend on the chosen body, so they must be read from a compiled
+    model once before the genotype length (and CMA-ES's `n`) is known.
     """
     mj.set_mjcb_control(None)
     world = build_world()
@@ -57,7 +57,12 @@ def probe_dimensions(config: ExperimentConfig) -> tuple[int, int]:
     )
     model = world.spec.compile()
     data = mj.MjData(model)
-    return len(data.qpos), model.nu
+    inputs = controller_inputs(data, _target_xy(config), config.clock_hz)
+    return len(inputs), model.nu
+
+
+def _target_xy(config: ExperimentConfig) -> npt.NDArray[np.float64]:
+    return np.asarray(config.target_position[:2])
 
 
 def genotype_length_for(config: ExperimentConfig) -> int:
@@ -86,7 +91,8 @@ def run_episode(
     mj.mj_resetData(model, data)
     mj.mj_forward(model, data)
 
-    input_size = len(data.qpos)
+    target_xy = _target_xy(config)
+    input_size = len(controller_inputs(data, target_xy, config.clock_hz))
     output_size = model.nu
     weights = unflatten(flat_weights, input_size, config.hidden_size, output_size)
 
@@ -98,7 +104,9 @@ def run_episode(
     }
 
     def control_callback(m: mj.MjModel, d: mj.MjData) -> None:
-        actions = nn_controller(m, d, weights)
+        actions = nn_controller(
+            controller_inputs(d, target_xy, config.clock_hz), weights
+        )
         d.ctrl[:] = actions
 
         current_position = np.asarray(d.qpos[0:3]).copy()
@@ -150,14 +158,17 @@ def run_episode_trajectory(
     mj.mj_resetData(model, data)
     mj.mj_forward(model, data)
 
-    input_size = len(data.qpos)
+    target_xy = _target_xy(config)
+    input_size = len(controller_inputs(data, target_xy, config.clock_hz))
     output_size = model.nu
     weights = unflatten(flat_weights, input_size, config.hidden_size, output_size)
 
     trajectory: list[npt.NDArray[np.float64]] = [np.asarray(data.qpos[0:3]).copy()]
 
     def control_callback(m: mj.MjModel, d: mj.MjData) -> None:
-        actions = nn_controller(m, d, weights)
+        actions = nn_controller(
+            controller_inputs(d, target_xy, config.clock_hz), weights
+        )
         d.ctrl[:] = actions
         trajectory.append(np.asarray(d.qpos[0:3]).copy())
 

@@ -38,9 +38,16 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Match this to the paired CMA-ES run's resolved lambda_.",
     )
-    parser.add_argument("--sim-duration", type=float, default=10.0)
+    parser.add_argument("--sim-duration", type=float, default=15.0)
+    parser.add_argument("--clock-hz", type=float, default=1.3)
     parser.add_argument("--sigma0", type=float, default=0.5)
     parser.add_argument("--hidden-size", type=int, default=6)
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=None,
+        help="Where per-run data is written (default: assignment_2/__data__).",
+    )
     return parser.parse_args()
 
 
@@ -51,8 +58,10 @@ def main() -> None:
         seed=args.seed,
         hidden_size=args.hidden_size,
         sim_duration=args.sim_duration,
+        clock_hz=args.clock_hz,
         budget=args.budget,
         sigma0=args.sigma0,
+        **({"output_root": args.output_root} if args.output_root else {}),
     )
 
     n = genotype_length_for(config)
@@ -74,7 +83,7 @@ def main() -> None:
         history,
     )
 
-    while search.evals_used < config.budget:
+    while search.evals_used + search.batch_size <= config.budget:
         ea.step()
         record, _ = history[-1]
         logger.log_generation(record)

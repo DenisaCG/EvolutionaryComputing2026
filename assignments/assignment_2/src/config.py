@@ -34,6 +34,9 @@ class ExperimentConfig:
         Not shared with any ariel.ec RNG.
     hidden_size : int
         Width of the single hidden layer of the NN controller.
+    clock_hz : float
+        Frequency of the controller's sin/cos clock input (see
+        `controller.py`). Default ~1.3 Hz follows Clune et al. (2009, 2011).
     sim_duration : float
         Seconds of simulated time per fitness evaluation.
     spawn_pos, target_position : tuple[float, float, float]
@@ -57,6 +60,15 @@ class ExperimentConfig:
         (unlike the paper's benchmark functions), so this is chosen to
         match the template's own random-weight-init scale rather than
         derived from a search-region width.
+    stagnation_gens, stagnation_tol : int, float
+        Task-specific stagnation criterion (see `cma_es.CMAES`): a CMA-ES run
+        counts as stuck when its best-so-far improved by less than
+        `stagnation_tol` (m) over `stagnation_gens` generations. K = 25 was
+        chosen from the 1500-eval pilot: healthy runs never stalled for more
+        than 18 generations, a stuck run stalled for 28+.
+    max_lambda : int
+        IPOP population cap: restarts double lambda until doubling would
+        exceed this, then keep the largest lambda reached.
     output_root : Path
         Directory under which per-run data (`__data__/...`) is written.
     """
@@ -64,15 +76,21 @@ class ExperimentConfig:
     body: BodyName
     seed: int
     hidden_size: int = 6
-    sim_duration: float = 10.0
+    clock_hz: float = 1.3
+    sim_duration: float = 15.0
     spawn_pos: tuple[float, float, float] = (-0.8, 0.0, 0.0)
     target_position: tuple[float, float, float] = (5.0, 0.0, 0.5)
     fall_height_threshold: float = 0.05
     lambda_: int | None = None
     budget: int = 1500
     sigma0: float = 0.5
+    stagnation_gens: int = 25
+    stagnation_tol: float = 0.01
+    max_lambda: int = 200
     output_root: Path = field(default_factory=lambda: ASSIGNMENT_ROOT / "__data__")
 
-    def run_dir(self, algorithm: Literal["cma_es", "random_search"]) -> Path:
+    def run_dir(
+        self, algorithm: Literal["cma_es", "ipop_cma_es", "random_search"]
+    ) -> Path:
         """Per-seed output directory: `__data__/<body>__<algorithm>/seed_<n>/`."""
         return self.output_root / f"{self.body}__{algorithm}" / f"seed_{self.seed}"

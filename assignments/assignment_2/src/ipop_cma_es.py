@@ -4,7 +4,8 @@ Reference: Auger & Hansen (2005), A Restart CMA Evolution Strategy With
 Increasing Population Size, CEC, pp. 1769-1776, Sections 2-3.
 https://www.cmap.polytechnique.fr/~nikolaus.hansen/cec2005ipopcmaes.pdf
 
-Population doubles on a local stopping criterion; each restart resets the
+Population doubles on a local stopping criterion (up to `max_lambda`, after
+which restarts keep the largest population reached); each restart resets the
 entire strategy. For these unbounded NN weights, the first run uses mean0
 (zero by default), and later means are sampled from N(mean0, sigma0**2 I).
 This initialization is a task-specific adaptation, not the paper's bounded
@@ -43,6 +44,8 @@ class IPOPCMAES:
     A local stop schedules a restart for the next ask(), rather than ending
     the whole search. Global termination occurs when the remaining budget
     cannot accommodate the next full population (including a doubled one).
+    With ``max_lambda`` set, a restart that would exceed it keeps the current
+    population size instead of doubling, so the whole budget is still used.
     There are no partial generations and no budget overshoot.
 
     ``generation`` and ``evals_used`` count across all restarts. tell() returns
@@ -67,6 +70,9 @@ class IPOPCMAES:
         sigma0: float = 0.5,
         mean0: FloatArray | None = None,
         seed: int | None = None,
+        max_lambda: int | None = None,
+        stagnation_gens: int | None = None,
+        stagnation_tol: float = 0.01,
     ) -> None:
         if isinstance(n, bool) or not isinstance(n, Integral) or n < 1:
             raise ValueError("n must be a positive integer.")
@@ -79,6 +85,8 @@ class IPOPCMAES:
             or initial_lambda < 2
         ):
             raise ValueError("lambda_ must be an integer >= 2.")
+        if max_lambda is not None and max_lambda < initial_lambda:
+            raise ValueError("max_lambda must be >= the initial lambda_.")
         if not math.isfinite(sigma0) or sigma0 <= 0:
             raise ValueError("sigma0 must be finite and positive.")
         center = np.zeros(n) if mean0 is None else np.array(mean0, dtype=float)
@@ -89,11 +97,16 @@ class IPOPCMAES:
         self.budget = int(budget)
         self.sigma0 = float(sigma0)
         self.initial_lambda = int(initial_lambda)
+        self.max_lambda = max_lambda
+        self._stagnation = {
+            "stagnation_gens": stagnation_gens,
+            "stagnation_tol": stagnation_tol,
+        }
         self._center = center.copy()
         self._restart_seeds = np.random.SeedSequence(seed)
         self._cma = CMAES(
             n=self.n, lambda_=self.initial_lambda, sigma0=self.sigma0,
-            mean0=self._center, seed=seed,
+            mean0=self._center, seed=seed, **self._stagnation,
         )
         self.generation = 0
         self.evals_used = 0
@@ -109,7 +122,12 @@ class IPOPCMAES:
 
     @property
     def next_lambda(self) -> int:
-        return self.lambda_ * (2 if self._pending_restart is not None else 1)
+        if self._pending_restart is None:
+            return self.lambda_
+        doubled = 2 * self.lambda_
+        if self.max_lambda is not None and doubled > self.max_lambda:
+            return self.lambda_
+        return doubled
 
     def stopping_reason(self) -> str | None:
         """Global budget stop, not the local criterion that triggers a restart.
@@ -135,15 +153,16 @@ class IPOPCMAES:
             raise RuntimeError(f"IPOP-CMA-ES has stopped: {reason}.")
 
         if self._pending_restart is not None:
-            old_lambda = self.lambda_
+            old_lambda, new_lambda = self.lambda_, self.next_lambda
             mean_seed, search_seed = self._restart_seeds.spawn(2)
             rng = np.random.default_rng(mean_seed)
             mean = rng.normal(loc=self._center, scale=self.sigma0, size=self.n)
             # New construction resets covariance, paths, sigma, local history
             # and counters, and recalculates parameters for the larger lambda.
             self._cma = CMAES(
-                n=self.n, lambda_=2 * old_lambda, sigma0=self.sigma0,
+                n=self.n, lambda_=new_lambda, sigma0=self.sigma0,
                 mean0=mean, seed=int(search_seed.generate_state(1)[0]),
+                **self._stagnation,
             )
             self.restart_history.append(RestartRecord(
                 restart=len(self.restart_history) + 1,

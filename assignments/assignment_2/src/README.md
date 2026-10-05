@@ -11,8 +11,10 @@ Everything here is imported by the scripts in `experiments/` and
 - **`bodies.py`** — maps a body name (`"turtle"` / `"iguana"`) to the ariel
   prebuilt-robot factory that constructs it, and builds the (fixed) Olympic
   Arena world. Add a new body here only.
-- **`controller.py`** — the NN controller's forward pass (input -> tanh
-  hidden -> tanh output, rescaled to the hinge range) and the
+- **`controller.py`** — the NN controller: its inputs (hinge angles, a
+  sin/cos clock at `clock_hz`, and the bearing to the target relative to the
+  core's heading), the forward pass (input -> tanh hidden -> tanh output,
+  biases on both layers, rescaled to the hinge range) and the
   flatten/unflatten glue between a flat weight vector (what CMA-ES searches
   over) and the two weight matrices the forward pass needs.
 - **`simulate.py`** — `run_episode()`: builds the world+robot, wires a
@@ -41,56 +43,39 @@ Everything here is imported by the scripts in `experiments/` and
 
 ## Design choices worth knowing
 
-Arshana Update: Added `ipop_cma_es.py` containing `IPOPCMAES` and
-`RestartRecord`. It composes the existing `CMAES` without altering its update
-equations or stopping criteria. The algorithmic source is Auger & Hansen,
-*A Restart CMA Evolution Strategy With Increasing Population Size*, CEC 2005,
-pp. 1769–1776, Sections 2–3
+**IPOP-CMA-ES** (`ipop_cma_es.py`: `IPOPCMAES`, `RestartRecord`) composes
+the existing `CMAES` without altering its update equations. Source: Auger &
+Hansen, *A Restart CMA Evolution Strategy With Increasing Population Size*,
+CEC 2005, pp. 1769–1776, Sections 2–3
 ([paper](https://www.cmap.polytechnique.fr/~nikolaus.hansen/cec2005ipopcmaes.pdf)).
+Used by `experiments/run_ipop_cma_es.py`; tested in `tests/test_ipop_cma_es.py`.
 
-- Population sizes follow `lambda0, 2*lambda0, 4*lambda0, ...`; `lambda0`
-  defaults to `4 + floor(3*ln(n))`, with an optional override.
-- After `tell()`, the existing local stopping criteria schedule a restart.
-  The next `ask()` creates a fresh optimizer: identity covariance, zero
-  evolution paths, reset local history, restored `sigma0`, and strategy
-  parameters recalculated for the larger population. No fixed restart interval
-  is added; a short budget may allow no restarts at all.
+- Population sizes follow `lambda0, 2*lambda0, 4*lambda0, ...` until doubling
+  would exceed `max_lambda`; later restarts keep the largest `lambda`
+  reached (not in the paper, which has no cap).
+- After `tell()`, a local stopping criterion schedules a restart: the
+  paper's 5, plus the task-specific `stagnation` criterion in `CMAES`
+  (best-so-far improved by less than `stagnation_tol` over
+  `stagnation_gens` generations; not in the paper). The paper's criteria are
+  sized for cheap benchmark functions (e.g. `equalfunvalhist` needs a 1e-12
+  spread over 10 + 30n/lambda generations, ~6000 evaluations here) and never
+  fire within an affordable MuJoCo budget. The next `ask()` creates a fresh
+  optimizer: identity covariance, zero evolution paths, reset local history,
+  restored `sigma0`, and strategy parameters recalculated for the new
+  population.
 - Initialization is adapted to unbounded NN weights: the first run starts at
-  `mean0` (zero by default), matching basic CMA-ES; subsequent means are fresh
-  draws from `N(mean0, sigma0**2 I)`. The paper instead draws means uniformly
-  in a bounded search region. We retain the task's `sigma0=0.5` default.
+  `mean0` (zero by default), matching basic CMA-ES with the same seed
+  exactly; subsequent means are fresh draws from `N(mean0, sigma0**2 I)`.
+  The paper instead draws means uniformly in a bounded search region.
   Restart random streams are reproducible from the supplied seed. Restarts
   do not initialize at the previous winner.
-- One budget covers all runs. Only complete populations are evaluated; the
-  search stops if the next population, including a pending doubling, cannot
-  fit. Unused evaluations can remain. The wrapper never overshoots its budget.
+- One budget covers all runs. Only complete populations are evaluated, so
+  the budget is never exceeded; a remainder smaller than the next population
+  stays unused.
 - `best_genotype`/`best_fitness` retain the overall winner. `tell()` returns
   the existing `GenerationRecord`, with cumulative generations/evaluations
   but generation-local statistics. `restart_history` records each launched
   restart's cause, population sizes, and cumulative counters.
-
-Arshana Update: Library usage sketch (documentation only; not executed):
-
-```python
-from ipop_cma_es import IPOPCMAES
-
-optimizer = IPOPCMAES(n=n, budget=config.budget, lambda_=config.lambda_,
-                     sigma0=config.sigma0, seed=config.seed)
-while optimizer.stopping_reason() is None:
-    candidates = optimizer.ask()
-    fitnesses = np.array([evaluate(config, x) for x in candidates])
-    record = optimizer.tell(fitnesses)
-    # An existing RunLogger can accept record via log_generation(record).
-```
-
-The sketch assumes the runner has supplied `n`, `config`, `np`, and `evaluate`.
-Call `ask()` and `tell()` alternately; fitnesses must be finite and match the
-sampled population. `stopping_reason()` takes no arguments and reports only
-global termination (`budget_exhausted` or `insufficient_budget_for_population`).
-`lambda_` describes the current population, while `next_lambda` includes a
-scheduled restart. A budget smaller than the initial population performs no
-evaluations and leaves `best_genotype=None`. No code or tests were run for
-this addition.
 
 - **Runs are driven by `ariel.ec`'s `EA` engine; the strategy update is our
   own.** `ec_engine.py` expresses one generation as three `EAOperation`s

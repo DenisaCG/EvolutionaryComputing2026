@@ -21,7 +21,7 @@ import mujoco
 import numpy as np
 
 from cma_es import GenerationRecord
-from config import ExperimentConfig
+from config import ASSIGNMENT_ROOT, ExperimentConfig
 
 GENERATIONS_CSV_FIELDS = [
     "generation",
@@ -49,6 +49,8 @@ class RunLogger:
         row = asdict(record)
         row["wall_time_s"] = time.monotonic() - self._start_time
         self._records.append(row)
+        # Rewritten every generation so a crashed/killed run keeps its curve.
+        self.write_generations_csv()
 
     def write_generations_csv(self) -> None:
         path = self.run_dir / "generations.csv"
@@ -74,6 +76,7 @@ class RunLogger:
         resolved_params: dict[str, Any],
         termination_reason: str,
         total_evals: int,
+        extra: dict[str, Any] | None = None,
     ) -> None:
         path = self.run_dir / "manifest.json"
         manifest = {
@@ -85,15 +88,27 @@ class RunLogger:
             "termination_reason": termination_reason,
             "total_evals": total_evals,
             "config": {
-                k: (list(v) if isinstance(v, tuple) else str(v) if isinstance(v, Path) else v)
+                k: (list(v) if isinstance(v, tuple) else _portable_path(v) if isinstance(v, Path) else v)
                 for k, v in asdict(config).items()
             },
             "resolved_params": resolved_params,
             "hardware": _hardware_info(),
             "software": _software_versions(),
             "git_commit": _git_commit_hash(),
+            "git_uncommitted_changes": _git_has_uncommitted_changes(),
+            **(extra or {}),
         }
         path.write_text(json.dumps(manifest, indent=2, default=str))
+
+
+def _portable_path(path: Path) -> str:
+    """Path relative to the assignment folder, so manifests don't record the
+    machine-specific absolute path (which includes the user's home directory).
+    """
+    try:
+        return str(path.resolve().relative_to(ASSIGNMENT_ROOT))
+    except ValueError:
+        return str(path)
 
 
 def _hardware_info() -> dict[str, Any]:
@@ -195,6 +210,19 @@ def _software_versions() -> dict[str, str]:
         "numpy": np.__version__,
         "mujoco": mujoco.__version__,
     }
+
+
+def _git_has_uncommitted_changes() -> bool | None:
+    """Whether this assignment's code differed from `git_commit` when run."""
+    try:
+        status = subprocess.check_output(
+            ["git", "status", "--porcelain", "--", ".."],
+            stderr=subprocess.DEVNULL,
+            cwd=Path(__file__).resolve().parent,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+    return bool(status.strip())
 
 
 def _git_commit_hash() -> str | None:

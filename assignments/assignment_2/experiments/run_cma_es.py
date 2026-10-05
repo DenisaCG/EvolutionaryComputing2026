@@ -46,9 +46,18 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="CMA-ES population size. Default: paper's formula 4+floor(3*ln(n)).",
     )
-    parser.add_argument("--sim-duration", type=float, default=10.0)
+    parser.add_argument("--sim-duration", type=float, default=15.0)
+    parser.add_argument("--clock-hz", type=float, default=1.3)
     parser.add_argument("--sigma0", type=float, default=0.5)
+    parser.add_argument("--stagnation-gens", type=int, default=25)
+    parser.add_argument("--stagnation-tol", type=float, default=0.01)
     parser.add_argument("--hidden-size", type=int, default=6)
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=None,
+        help="Where per-run data is written (default: assignment_2/__data__).",
+    )
     return parser.parse_args()
 
 
@@ -59,13 +68,24 @@ def main() -> None:
         seed=args.seed,
         hidden_size=args.hidden_size,
         sim_duration=args.sim_duration,
+        clock_hz=args.clock_hz,
         lambda_=args.lambda_,
         budget=args.budget,
         sigma0=args.sigma0,
+        stagnation_gens=args.stagnation_gens,
+        stagnation_tol=args.stagnation_tol,
+        **({"output_root": args.output_root} if args.output_root else {}),
     )
 
     n = genotype_length_for(config)
-    cma = CMAES(n=n, lambda_=config.lambda_, sigma0=config.sigma0, seed=config.seed)
+    cma = CMAES(
+        n=n,
+        lambda_=config.lambda_,
+        sigma0=config.sigma0,
+        seed=config.seed,
+        stagnation_gens=config.stagnation_gens,
+        stagnation_tol=config.stagnation_tol,
+    )
     logger = RunLogger(config.run_dir("cma_es"))
 
     print(
@@ -81,8 +101,12 @@ def main() -> None:
         history,
     )
 
-    termination_reason = "budget_exhausted"
-    while cma.evals_used < config.budget:
+    # Plain CMA-ES (no restarts) uses the whole budget so it is compared with
+    # IPOP and random search at equal evaluations; local stopping criteria
+    # are only logged (first firing) -- that is where IPOP would restart.
+    # Only full generations are run, so the budget is never exceeded.
+    first_local_stop: dict | None = None
+    while cma.evals_used + cma.lambda_ <= config.budget:
         ea.step()
         record, fitnesses = history[-1]
         logger.log_generation(record)
@@ -92,9 +116,13 @@ def main() -> None:
         )
 
         reason = cma.stopping_reason(fitnesses)
-        if reason is not None:
-            termination_reason = reason
-            break
+        if reason is not None and first_local_stop is None:
+            first_local_stop = {
+                "reason": reason,
+                "generation": record.generation,
+                "evals_used": record.evals_used,
+            }
+            print(f"  (local stop '{reason}' -- continuing, no restarts)")
 
     logger.write_generations_csv()
     logger.write_best_genome(cma.best_genotype, cma.best_fitness)
@@ -107,13 +135,14 @@ def main() -> None:
         algorithm="cma_es",
         config=config,
         resolved_params=resolved_params,
-        termination_reason=termination_reason,
+        termination_reason="budget_exhausted",
         total_evals=cma.evals_used,
+        extra={"first_local_stop": first_local_stop},
     )
 
     print(
         f"[cma_es] done: best_fitness={cma.best_fitness:.4f} "
-        f"reason={termination_reason} evals={cma.evals_used}"
+        f"first_local_stop={first_local_stop} evals={cma.evals_used}"
     )
 
 
