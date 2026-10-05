@@ -1,0 +1,7 @@
+body,algorithm,seed,best_fitness,final_distance_m,total_evals,n_restarts,final_lambda,first_local_stop_evals,wall_clock_duration_s,termination_reason
+turtle,cma_es,0,-1.6158065957157408,4.184193404284259,8000,0,10,1230,10351.173984915004,budget_exhausted
+turtle,cma_es,1,-1.4378635142256355,4.362136485774364,8000,0,10,1340,10419.657538293992,budget_exhausted
+turtle,ipop_cma_es,0,-1.5208223914141934,4.279177608585806,7990,3,80,,10040.379383961,insufficient_budget_for_population
+turtle,ipop_cma_es,1,-1.3341759730481906,4.465824026951809,7950,3,80,,10139.56037202901,insufficient_budget_for_population
+turtle,random_search,0,-0.7582118091297927,5.041788190870207,8000,0,,,10380.382461293993,budget_exhausted
+turtle,random_search,1,-0.6115406105399988,5.188459389460001,8000,0,,,10323.320965895007,budget_exhausted
