@@ -28,10 +28,18 @@ def run_ipop(budget: int, **kwargs: object) -> IPOPCMAES:
     return ipop
 
 
+def test_stagnation_window_follows_paper_form() -> None:
+    # K = 10 + ceil(c * n / lambda); n = 199, c = 4.5 as in the experiment.
+    expected = {10: 100, 20: 55, 40: 33, 80: 22, 160: 16}
+    for lam, k in expected.items():
+        assert CMAES(n=199, lambda_=lam, stagnation_c=4.5).stagnation_gens == k
+
+
 def test_stagnation_fires_only_after_k_flat_generations() -> None:
-    cma = CMAES(n=5, lambda_=6, seed=0, stagnation_gens=3, stagnation_tol=0.01)
+    cma = CMAES(n=5, lambda_=6, seed=0, stagnation_c=0.0, stagnation_tol=0.01)
+    assert cma.stagnation_gens == 10
     flat = np.ones(6)
-    for _ in range(3):
+    for _ in range(10):
         cma.ask()
         cma.tell(flat)
         assert cma.stopping_reason(flat) is None
@@ -50,7 +58,7 @@ def test_stagnation_disabled_by_default() -> None:
 
 
 def test_lambda_doubles_then_is_capped() -> None:
-    ipop = run_ipop(20000, lambda_=10, max_lambda=40, stagnation_gens=5)
+    ipop = run_ipop(20000, lambda_=10, max_lambda=40, stagnation_c=1.0)
     lambdas = [r.new_lambda for r in ipop.restart_history]
     assert lambdas[:2] == [20, 40]
     assert len(lambdas) > 2, "expected restarts beyond the cap"
@@ -60,15 +68,15 @@ def test_lambda_doubles_then_is_capped() -> None:
 
 def test_budget_never_exceeded() -> None:
     for budget in (95, 1000, 4321):
-        ipop = run_ipop(budget, lambda_=10, max_lambda=40, stagnation_gens=5)
+        ipop = run_ipop(budget, lambda_=10, max_lambda=40, stagnation_c=1.0)
         assert ipop.evals_used <= budget
         assert budget - ipop.evals_used < ipop.next_lambda
 
 
 def test_first_run_matches_plain_cma_es() -> None:
     """Same seed -> IPOP's first run is identical to CMA-ES until it restarts."""
-    ipop = IPOPCMAES(n=10, budget=10**6, lambda_=10, seed=3, stagnation_gens=25)
-    cma = CMAES(n=10, lambda_=10, seed=3, stagnation_gens=25)
+    ipop = IPOPCMAES(n=10, budget=10**6, lambda_=10, seed=3, stagnation_c=4.5)
+    cma = CMAES(n=10, lambda_=10, seed=3, stagnation_c=4.5)
     for _ in range(20):
         x_ipop, x_cma = ipop.ask(), cma.ask()
         np.testing.assert_array_equal(x_ipop, x_cma)

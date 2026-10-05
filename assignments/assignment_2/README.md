@@ -17,7 +17,8 @@ equal evaluation budget: CMA-ES (no restarts), IPOP-CMA-ES, and random search.
   local stopping criterion triggers a fresh CMA-ES run with doubled `lambda`
   (10, 20, ..., 160; capped at `max_lambda = 200`), under one shared budget.
   Besides the paper's 5 criteria, a task-specific `stagnation` criterion
-  (best-so-far improved < 0.01 m in 25 generations) makes restarts reachable
+  (best-so-far improved < 0.01 m over K = 10 + ceil(4.5 n / lambda)
+  generations, the form of the paper's equalfunvalhist window) makes restarts reachable
   within an affordable MuJoCo budget. Tested in `tests/test_ipop_cma_es.py`.
 - A **random-search baseline** (`src/random_search.py`), matched on total
   evaluations.
@@ -89,7 +90,8 @@ results/        per experiment: aggregated CSVs, copied run files, plots
   path.
 - **Budget of 8000 evaluations per run.** The paper's `n * 10^4` is meant for
   cheap analytic functions; one 15 s episode costs ~0.5 s (~1 s with 6 runs
-  in parallel on a laptop). 8000 evaluations leave room for 2-3 restarts
-  after the minimum stall of 25 generations at each population size.
+  in parallel on a laptop). A restart needs at least K stalled generations
+  (100 x 10 = 1000 evaluations at lambda0 = 10, ~1100 at lambda = 20), so
+  8000 evaluations leave room for about 1-3 restarts.
 - **Same seeds across conditions.** IPOP's first run is identical to the
   CMA-ES run with the same seed, so any difference comes from the restarts.

@@ -49,7 +49,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sim-duration", type=float, default=15.0)
     parser.add_argument("--clock-hz", type=float, default=1.3)
     parser.add_argument("--sigma0", type=float, default=0.5)
-    parser.add_argument("--stagnation-gens", type=int, default=25)
+    parser.add_argument("--stagnation-c", type=float, default=4.5)
     parser.add_argument("--stagnation-tol", type=float, default=0.01)
     parser.add_argument("--hidden-size", type=int, default=6)
     parser.add_argument(
@@ -72,7 +72,7 @@ def main() -> None:
         lambda_=args.lambda_,
         budget=args.budget,
         sigma0=args.sigma0,
-        stagnation_gens=args.stagnation_gens,
+        stagnation_c=args.stagnation_c,
         stagnation_tol=args.stagnation_tol,
         **({"output_root": args.output_root} if args.output_root else {}),
     )
@@ -83,7 +83,7 @@ def main() -> None:
         lambda_=config.lambda_,
         sigma0=config.sigma0,
         seed=config.seed,
-        stagnation_gens=config.stagnation_gens,
+        stagnation_c=config.stagnation_c,
         stagnation_tol=config.stagnation_tol,
     )
     logger = RunLogger(config.run_dir("cma_es"))

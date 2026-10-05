@@ -60,12 +60,15 @@ class ExperimentConfig:
         (unlike the paper's benchmark functions), so this is chosen to
         match the template's own random-weight-init scale rather than
         derived from a search-region width.
-    stagnation_gens, stagnation_tol : int, float
+    stagnation_c, stagnation_tol : float, float
         Task-specific stagnation criterion (see `cma_es.CMAES`): a CMA-ES run
         counts as stuck when its best-so-far improved by less than
-        `stagnation_tol` (m) over `stagnation_gens` generations. K = 25 was
-        chosen from the 1500-eval pilot: healthy runs never stalled for more
-        than 18 generations, a stuck run stalled for 28+.
+        `stagnation_tol` (m) over K = 10 + ceil(stagnation_c * n / lambda)
+        generations (the paper's equalfunvalhist window form, constant 30 ->
+        4.5). For n = 199: K = 100, 55, 33, 22, 16 at lambda = 10..160.
+        Chosen from the 2-seed pilot (`results/ipop_l10_b8000`): at
+        lambda = 10, CMA-ES stalls of up to ~90 generations were followed by
+        real gains (2-6.5 cm); longer stalls only by <= 2 cm.
     max_lambda : int
         IPOP population cap: restarts double lambda until doubling would
         exceed this, then keep the largest lambda reached.
@@ -84,7 +87,7 @@ class ExperimentConfig:
     lambda_: int | None = None
     budget: int = 1500
     sigma0: float = 0.5
-    stagnation_gens: int = 25
+    stagnation_c: float = 4.5
     stagnation_tol: float = 0.01
     max_lambda: int = 200
     output_root: Path = field(default_factory=lambda: ASSIGNMENT_ROOT / "__data__")

@@ -71,7 +71,7 @@ class IPOPCMAES:
         mean0: FloatArray | None = None,
         seed: int | None = None,
         max_lambda: int | None = None,
-        stagnation_gens: int | None = None,
+        stagnation_c: float | None = None,
         stagnation_tol: float = 0.01,
     ) -> None:
         if isinstance(n, bool) or not isinstance(n, Integral) or n < 1:
@@ -99,7 +99,7 @@ class IPOPCMAES:
         self.initial_lambda = int(initial_lambda)
         self.max_lambda = max_lambda
         self._stagnation = {
-            "stagnation_gens": stagnation_gens,
+            "stagnation_c": stagnation_c,
             "stagnation_tol": stagnation_tol,
         }
         self._center = center.copy()

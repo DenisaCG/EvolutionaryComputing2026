@@ -36,6 +36,7 @@ python experiments/run_sweep.py --experiment ipop_l10_b8000 --seeds 0 1 \
 
 Settings (defaults in `src/config.py`): turtle, Olympic Arena, 15 s episodes,
 clock 1.3 Hz, `sigma0 = 0.5`, `lambda0 = 10`, `max_lambda = 200`, stagnation
-= < 0.01 m best-so-far improvement in 25 generations. With the same seed,
+= < 0.01 m best-so-far improvement over K = 10 + ceil(4.5 n / lambda)
+generations (100, 55, 33, 22, 16 at lambda = 10..160). With the same seed,
 IPOP's first run is identical to the CMA-ES run, so differences come only
 from the restarts.

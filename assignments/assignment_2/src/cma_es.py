@@ -111,11 +111,13 @@ class CMAES:
         for NN weights, unlike the paper's benchmark functions).
     seed : int or None
         Seeds this instance's own RNG (independent of any ariel.ec RNG).
-    stagnation_gens : int or None
+    stagnation_c : float or None
         If set, adds a task-specific `stagnation` stopping criterion: fires
         when the best-so-far fitness improved by less than `stagnation_tol`
-        over the last `stagnation_gens` generations. `None` (default) keeps
-        only the paper's 5 criteria.
+        over the last K = 10 + ceil(stagnation_c * n / lambda_) generations
+        -- the form of the paper's equalfunvalhist window (which uses 30),
+        with a smaller constant. `None` (default) keeps only the paper's 5
+        criteria.
     stagnation_tol : float
         Minimum improvement (fitness units; metres for our fitness) that
         counts as progress for the `stagnation` criterion.
@@ -128,7 +130,7 @@ class CMAES:
         sigma0: float = 0.5,
         mean0: FloatArray | None = None,
         seed: int | None = None,
-        stagnation_gens: int | None = None,
+        stagnation_c: float | None = None,
         stagnation_tol: float = 0.01,
     ) -> None:
         self.n = n
@@ -147,7 +149,11 @@ class CMAES:
         self.generation = 0
         self.evals_used = 0
         self.tol_x = 1e-12 * sigma0
-        self.stagnation_gens = stagnation_gens
+        self.stagnation_gens = (
+            None
+            if stagnation_c is None
+            else 10 + math.ceil(stagnation_c * n / self.params.lambda_)
+        )
         self.stagnation_tol = stagnation_tol
 
         self.best_genotype: FloatArray | None = None
@@ -294,8 +300,9 @@ class CMAES:
 
         # Not in the paper: equalfunvalhist's 1e-12 tolerance and
         # 10 + 30n/lambda window are sized for cheap benchmark functions and
-        # never fire within an affordable MuJoCo budget. Same idea, scaled
-        # to the task: best-so-far improved by < stagnation_tol in K gens.
+        # never fire within an affordable MuJoCo budget. Same idea and window
+        # form, scaled to the task: best-so-far improved by < stagnation_tol
+        # over K = 10 + ceil(stagnation_c * n / lambda) generations.
         k = self.stagnation_gens
         if k is not None and len(history) > k:
             best_so_far = np.minimum.accumulate(history)

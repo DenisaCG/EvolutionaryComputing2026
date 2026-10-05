@@ -56,7 +56,9 @@ Used by `experiments/run_ipop_cma_es.py`; tested in `tests/test_ipop_cma_es.py`.
 - After `tell()`, a local stopping criterion schedules a restart: the
   paper's 5, plus the task-specific `stagnation` criterion in `CMAES`
   (best-so-far improved by less than `stagnation_tol` over
-  `stagnation_gens` generations; not in the paper). The paper's criteria are
+  K = 10 + ceil(`stagnation_c` * n / lambda) generations -- the paper's
+  equalfunvalhist window form with constant 4.5 instead of 30; not in the
+  paper). The paper's criteria are
   sized for cheap benchmark functions (e.g. `equalfunvalhist` needs a 1e-12
   spread over 10 + 30n/lambda generations, ~6000 evaluations here) and never
   fire within an affordable MuJoCo budget. The next `ask()` creates a fresh
