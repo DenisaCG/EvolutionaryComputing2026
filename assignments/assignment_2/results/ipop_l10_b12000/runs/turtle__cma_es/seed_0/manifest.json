@@ -1,0 +1,77 @@
+{
+  "algorithm": "cma_es",
+  "timestamp_utc": "2026-10-05T17:10:08Z",
+  "wall_clock_duration_s": 16567.265377583914,
+  "termination_reason": "budget_exhausted",
+  "total_evals": 12000,
+  "config": {
+    "body": "turtle",
+    "seed": 0,
+    "hidden_size": 6,
+    "clock_hz": 1.3,
+    "sim_duration": 15.0,
+    "spawn_pos": [
+      -0.8,
+      0.0,
+      0.0
+    ],
+    "target_position": [
+      5.0,
+      0.0,
+      0.5
+    ],
+    "fall_height_threshold": 0.05,
+    "terrain_seed": 0,
+    "lambda_": 10,
+    "budget": 12000,
+    "sigma0": 0.5,
+    "stagnation_c": 4.5,
+    "stagnation_tol": 0.01,
+    "max_lambda": 200,
+    "output_root": "__data__/ipop_l10_b12000"
+  },
+  "resolved_params": {
+    "n": 199,
+    "lambda_": 10,
+    "mu": 5,
+    "weights": [
+      0.45627264690340597,
+      0.2707530970017852,
+      0.16223111715866978,
+      0.08523354710016448,
+      0.025509591835974777
+    ],
+    "mu_eff": 3.1672992814107017,
+    "c_sigma": 0.024942639592900114,
+    "d_sigma": 1.0249426395929002,
+    "c_c": 0.01977973618320696,
+    "c_1": 4.9846401678754504e-05,
+    "c_mu": 7.340954067808939e-05,
+    "chi_n": 14.089030912479299
+  },
+  "hardware": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "logical_cpu_count": 8,
+    "python_implementation": "CPython",
+    "cpu_model": "Apple M2",
+    "machine_model": "Mac14,7",
+    "machine_name": "MacBook Pro",
+    "total_ram": "24 GB",
+    "total_cores": 8,
+    "performance_cores": 4,
+    "efficiency_cores": 4
+  },
+  "software": {
+    "python": "3.12.9",
+    "numpy": "2.3.3",
+    "mujoco": "3.8.0"
+  },
+  "git_commit": "cf1e85d8188fc3d4bf25e45a1ea3d5359eda0bf8",
+  "git_uncommitted_changes": true,
+  "first_local_stop": {
+    "reason": "stagnation",
+    "generation": 449,
+    "evals_used": 4490
+  }
+}
