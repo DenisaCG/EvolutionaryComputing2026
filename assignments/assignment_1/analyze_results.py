@@ -543,9 +543,12 @@ def main(argv: list[str] | None = None) -> None:
             DATA_DIR = HERE / "__data__" / "extreme_decrease"
         EA_CONDITIONS = ("dynamic_constant", "dynamic_exponential")
         RANDOM_SEARCH_FOLDER = "random_search_dynamic_scheduler"
-        SEEDS = list(range(20))
+        #SEEDS = list(range(20))
+        SEEDS = list(range(30, 50))
+        #RESULTS_DIR = HERE / ("results_extreme_decrease" if args.experiment == "extreme"
+        #                      else "results_dynamic_scheduler")
         RESULTS_DIR = HERE / ("results_extreme_decrease" if args.experiment == "extreme"
-                              else "results_dynamic_scheduler")
+                      else "results_dynamic_150gen")
         PLOTS_DIR, TABLES_DIR, MANIFESTS_DIR = (RESULTS_DIR / p for p in ("plots", "tables", "manifests"))
         LABELS.update(dynamic_constant="Constant mutation EA",
                       dynamic_exponential="Exponential mutation EA")

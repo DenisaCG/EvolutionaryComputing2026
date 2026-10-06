@@ -85,7 +85,19 @@ def build_world() -> SimpleFlatWorld:
     other, and say in your report which one you used. A controller evolved on
     flat ground and one evolved on rugged terrain are not comparable numbers.
     """
-    return SimpleFlatWorld()
+    world = SimpleFlatWorld()
+    target = world.spec.worldbody.add_geom()
+    target.name = "target"
+    target.type = mj.mjtGeom.mjGEOM_SPHERE
+    target.pos = TARGET_POSITION
+    target.size = [0.1, 0.0, 0.0]
+    target.rgba = [1.0, 0.0, 0.0, 1.0]
+
+    # Make it visual only, so the robot cannot collide with it
+    target.contype = 0
+    target.conaffinity = 0
+
+    return world
 
 
 def build_robot() -> CoreModule:
