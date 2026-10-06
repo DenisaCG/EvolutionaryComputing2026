@@ -1,6 +1,6 @@
 # `analysis/` — aggregation and plotting
 
-Both scripts work per experiment (`--experiment <name>`, the folder under
+The aggregation and plotting scripts work per experiment (`--experiment <name>`, the folder under
 `__data__/` written by `experiments/run_sweep.py`).
 
 - **`aggregate_results.py`** — scans
@@ -39,6 +39,21 @@ python analysis/make_plots.py --experiment ipop_l10_b8000
 before two fixes: random rugged terrain per evaluation (now seeded) and a
 fixed 25-generation stagnation window (now K = 10 + ceil(4.5 n / lambda)).
 Use it as the tuning record, not as final results.
+
+To watch a saved controller, run this from the repository root on macOS or
+Windows:
+
+```bash
+uv run python assignments/assignment_2/analysis/replay.py assignments/assignment_2/__data__/ipop_l10_b12000/turtle__cma_es/seed_2/best_genome.json
+```
+
+You can also pass the run folder instead of `best_genome.json`. Its sibling
+`manifest.json` supplies the body, controller settings, and terrain seed.
+Paths are relative to your terminal's current directory; absolute paths work
+from anywhere. Quote paths containing spaces. On macOS, the script switches
+to `mjpython` automatically and supplies uv's Python library search path.
+The simulation starts automatically, stops at the saved episode duration,
+and leaves the viewer open until you close it.
 
 `results/turtle/` and `results/iguana/` hold the earlier CMA-ES vs. random
 search plots (old fitness/controller, 10 s episodes, lambda = 25); they are
