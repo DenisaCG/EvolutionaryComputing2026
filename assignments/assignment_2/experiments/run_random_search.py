@@ -38,7 +38,7 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Match this to the paired CMA-ES run's resolved lambda_.",
     )
-    parser.add_argument("--sim-duration", type=float, default=15.0)
+    parser.add_argument("--sim-duration", type=float, default=30.0)
     parser.add_argument("--clock-hz", type=float, default=1.3)
     parser.add_argument("--sigma0", type=float, default=0.5)
     parser.add_argument("--hidden-size", type=int, default=6)

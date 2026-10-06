@@ -46,7 +46,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="CMA-ES population size. Default: paper's formula 4+floor(3*ln(n)).",
     )
-    parser.add_argument("--sim-duration", type=float, default=15.0)
+    parser.add_argument("--sim-duration", type=float, default=30.0)
     parser.add_argument("--clock-hz", type=float, default=1.3)
     parser.add_argument("--sigma0", type=float, default=0.5)
     parser.add_argument("--stagnation-c", type=float, default=4.5)

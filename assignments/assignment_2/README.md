@@ -94,7 +94,8 @@ results/        per experiment: aggregated CSVs, copied run files, plots
   path.
 - **Budget of 8000 evaluations per run.** The paper's `n * 10^4` is meant for
   cheap analytic functions; one 15 s episode costs ~0.5 s (~1 s with 6 runs
-  in parallel on a laptop). A restart needs at least K stalled generations
+  in parallel on a laptop), and episodes are now 30 s, which roughly doubles
+  that; measure with `experiments/benchmark_eval_time.py`. A restart needs at least K stalled generations
   (100 x 10 = 1000 evaluations at lambda0 = 10, ~1100 at lambda = 20), so
   8000 evaluations leave room for about 1-3 restarts.
 - **Same seeds across conditions.** IPOP's first run is identical to the

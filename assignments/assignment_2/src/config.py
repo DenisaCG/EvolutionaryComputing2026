@@ -85,7 +85,7 @@ class ExperimentConfig:
     seed: int
     hidden_size: int = 6
     clock_hz: float = 1.3
-    sim_duration: float = 15.0
+    sim_duration: float = 30.0
     spawn_pos: tuple[float, float, float] = (-0.8, 0.0, 0.0)
     target_position: tuple[float, float, float] = (5.0, 0.0, 0.5)
     fall_height_threshold: float = 0.05

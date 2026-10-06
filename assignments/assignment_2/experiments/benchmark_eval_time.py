@@ -30,7 +30,7 @@ from simulate import genotype_length_for  # noqa: E402
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--body", choices=["turtle", "iguana"], required=True)
-    parser.add_argument("--sim-duration", type=float, default=15.0)
+    parser.add_argument("--sim-duration", type=float, default=30.0)
     parser.add_argument("--n-samples", type=int, default=10)
     parser.add_argument(
         "--target-minutes",
