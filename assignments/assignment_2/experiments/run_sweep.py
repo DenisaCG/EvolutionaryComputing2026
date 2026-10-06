@@ -33,7 +33,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--body", choices=["turtle", "iguana"], default="turtle")
     parser.add_argument("--seeds", type=int, nargs="+", required=True)
     parser.add_argument("--budget", type=int, default=8000)
-    parser.add_argument("--lambda0", type=int, default=10)
+    parser.add_argument(
+        "--lambda0", type=int, default=None,
+        help="Initial population size. Default: CMA-ES formula 4+floor(3*ln(n)) "
+        "(19 for the turtle), resolved by each run script.",
+    )
     parser.add_argument("--conditions", nargs="+", choices=CONDITIONS, default=CONDITIONS)
     parser.add_argument("--jobs", type=int, default=6, help="Runs executed in parallel.")
     return parser.parse_args()
@@ -44,7 +48,9 @@ def command(algorithm: str, seed: int, args: argparse.Namespace, out: Path) -> l
         "--body", args.body, "--seed", str(seed),
         "--budget", str(args.budget), "--output-root", str(out),
     ]
-    if algorithm == "random_search":
+    if args.lambda0 is None:
+        extra = []
+    elif algorithm == "random_search":
         extra = ["--batch-size", str(args.lambda0)]
     else:
         extra = ["--lambda_", str(args.lambda0)]

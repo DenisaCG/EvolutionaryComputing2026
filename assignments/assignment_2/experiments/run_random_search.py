@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+from cma_es import default_lambda  # noqa: E402
 from config import ExperimentConfig  # noqa: E402
 from ec_engine import build_ea  # noqa: E402
 from fitness import evaluate  # noqa: E402
@@ -35,8 +36,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--batch-size",
         type=int,
-        required=True,
-        help="Match this to the paired CMA-ES run's resolved lambda_.",
+        default=None,
+        help="Match this to the paired CMA-ES run's resolved lambda_. "
+        "Default: CMA-ES formula 4+floor(3*ln(n)).",
     )
     parser.add_argument("--sim-duration", type=float, default=30.0)
     parser.add_argument("--clock-hz", type=float, default=1.3)
@@ -65,14 +67,15 @@ def main() -> None:
     )
 
     n = genotype_length_for(config)
+    batch_size = args.batch_size if args.batch_size is not None else default_lambda(n)
     search = RandomSearch(
-        n=n, batch_size=args.batch_size, sigma0=config.sigma0, seed=config.seed
+        n=n, batch_size=batch_size, sigma0=config.sigma0, seed=config.seed
     )
     logger = RunLogger(config.run_dir("random_search"))
 
     print(
         f"[random_search] body={config.body} seed={config.seed} n={n} "
-        f"batch_size={args.batch_size} budget={config.budget}"
+        f"batch_size={batch_size} budget={config.budget}"
     )
 
     history: list = []
@@ -97,7 +100,7 @@ def main() -> None:
     logger.write_manifest(
         algorithm="random_search",
         config=config,
-        resolved_params={"batch_size": args.batch_size},
+        resolved_params={"batch_size": batch_size},
         termination_reason="budget_exhausted",
         total_evals=search.evals_used,
     )
