@@ -1,0 +1,4 @@
+body,algorithm_a,algorithm_b,n_a,n_b,U,p_value
+turtle,cma_es,ipop_cma_es,2,2,1.5,1.0
+turtle,cma_es,random_search,2,2,0.0,0.3333333333333333
+turtle,ipop_cma_es,random_search,2,2,0.0,0.3333333333333333

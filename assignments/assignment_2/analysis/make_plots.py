@@ -53,7 +53,11 @@ ALGORITHM_LABELS = {
     "random_search": "Random search",
 }
 # Fixed per algorithm (not per plot) so colors match across every figure.
-ALGORITHM_COLORS = {"cma_es": PALETTE[0], "random_search": PALETTE[1], "ipop_cma_es": PALETTE[2]}
+# IPOP is a deeper purple than the palette's lavender, and dashed in line
+# plots: it is identical to CMA-ES until its first restart, so the lines
+# overlap and must stay distinguishable.
+ALGORITHM_COLORS = {"cma_es": PALETTE[0], "random_search": PALETTE[1], "ipop_cma_es": "#7E5FAF"}
+ALGORITHM_LINESTYLES = {"cma_es": "-", "random_search": "-", "ipop_cma_es": "--"}
 CMA_FAMILY = ["cma_es", "ipop_cma_es"]
 
 
@@ -133,15 +137,18 @@ class Plotter:
                 evals = run["evals_used"].to_numpy()
                 best = run["best_so_far"].to_numpy() + d0
                 idx = np.searchsorted(evals, grid, side="right") - 1
+                # Past a run's last generation (IPOP can stop a few evals short
+                # when the next population doesn't fit) its best-so-far stays
+                # at its final value, so seeds keep being averaged together.
                 curve = np.where(idx >= 0, best[np.clip(idx, 0, None)], np.nan)
-                curve[grid > evals[-1]] = np.nan  # don't extend past the run's end
                 curves.append(curve)
             curves = np.array(curves)
             mean = np.nanmean(curves, axis=0)
             std = np.nan_to_num(np.nanstd(curves, axis=0, ddof=1 if len(curves) > 1 else 0))
             color = ALGORITHM_COLORS[algorithm]
-            ax.plot(grid, mean, label=ALGORITHM_LABELS[algorithm], color=color)
-            ax.fill_between(grid, mean - std, mean + std, color=color, alpha=0.2)
+            ax.plot(grid, mean, label=ALGORITHM_LABELS[algorithm], color=color,
+                    linestyle=ALGORITHM_LINESTYLES[algorithm], linewidth=2)
+            ax.fill_between(grid, mean - std, mean + std, color=color, alpha=0.15)
 
         ax.axhline(d0, color="grey", linestyle=":", linewidth=1)
         ax.set_xlabel("Fitness evaluations")
@@ -154,6 +161,107 @@ class Plotter:
             f"dotted line = starting distance ({d0:.1f} m)",
         )
         self._save(fig, body, "convergence")
+
+    def plot_convergence_per_seed(self, body: str) -> None:
+        """Best-so-far distance of every run in one plot (color = algorithm,
+        line style = seed), with IPOP's restarts marked and the per-generation
+        best of IPOP's current stage shown faintly, so restarted stages that
+        never beat the best-so-far are still visible.
+        """
+        body_df = self.generations.filter(pl.col("body") == body)
+        d0 = self._initial_distance(body)
+        seed_styles = ["-", "--", ":", "-.", (0, (5, 1, 1, 1))]
+        widths = {"cma_es": 3.2, "random_search": 1.8, "ipop_cma_es": 1.6}
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        for algorithm in self._algorithms(body_df):
+            color = ALGORITHM_COLORS[algorithm]
+            seeds = body_df.filter(pl.col("algorithm") == algorithm)["seed"].unique().sort()
+            for i, seed in enumerate(seeds):
+                run = body_df.filter(
+                    (pl.col("algorithm") == algorithm) & (pl.col("seed") == seed)
+                ).sort("evals_used")
+                evals = run["evals_used"].to_numpy()
+                style = seed_styles[i % len(seed_styles)]
+                ax.step(evals, run["best_so_far"].to_numpy() + d0, where="post",
+                        color=color, linestyle=style, linewidth=widths[algorithm],
+                        label=f"{ALGORITHM_LABELS[algorithm]}, seed {seed}",
+                        zorder=2 if algorithm == "cma_es" else 3)
+                if algorithm != "ipop_cma_es":
+                    continue
+                ax.plot(evals, run["best_fitness"].to_numpy() + d0, color=color,
+                        linestyle=style, linewidth=0.7, alpha=0.35, zorder=1)
+                lam = run["lambda"].to_numpy()
+                for e in evals[:-1][np.diff(lam) != 0]:
+                    ax.axvline(e, color=color, linestyle=style, linewidth=1, alpha=0.6)
+
+        ax.axhline(d0, color="grey", linestyle=":", linewidth=1)
+        ax.set_xlabel("Fitness evaluations")
+        ax.set_ylabel("Distance to target (m, lower is better)")
+        legend_below(ax, ncol=3)
+        decorate(
+            fig,
+            f"Convergence per Seed on {body.capitalize()}",
+            subtitle="Thick lines: best-so-far per run (line style = seed). Vertical lines: "
+            "IPOP restarts. Faint purple: best of each IPOP generation (current stage).",
+        )
+        self._save(fig, body, "convergence_per_seed")
+
+    def plot_generation_best(self, body: str) -> None:
+        """Best fitness of each generation (not best-so-far), one panel per seed.
+
+        CMA-ES and IPOP from the same seed are identical until IPOP's first
+        restart; after it, each restart shows as a jump back up (a fresh
+        search with doubled lambda) followed by a new descent. Shows why
+        IPOP's best-so-far stays flat when no restarted stage beats it.
+        """
+        body_df = self.generations.filter(
+            (pl.col("body") == body) & pl.col("algorithm").is_in(CMA_FAMILY)
+        )
+        if body_df.filter(pl.col("algorithm") == "ipop_cma_es").is_empty():
+            return
+        d0 = self._initial_distance(body)
+        seeds = body_df.filter(pl.col("algorithm") == "ipop_cma_es")["seed"].unique().sort()
+
+        fig, axes = plt.subplots(len(seeds), 1, figsize=(10, 3.6 * len(seeds)),
+                                 squeeze=False, sharex=True, sharey=True)
+        for ax, seed in zip(axes[:, 0], seeds, strict=True):
+            for algorithm in self._algorithms(body_df):
+                run = body_df.filter(
+                    (pl.col("algorithm") == algorithm) & (pl.col("seed") == seed)
+                ).sort("evals_used")
+                if run.is_empty():
+                    continue
+                ax.plot(run["evals_used"], run["best_fitness"].to_numpy() + d0,
+                        color=ALGORITHM_COLORS[algorithm],
+                        linewidth=1.8 if algorithm == "cma_es" else 1.1,
+                        alpha=0.9, label=ALGORITHM_LABELS[algorithm],
+                        zorder=2 if algorithm == "cma_es" else 3)
+                if algorithm != "ipop_cma_es":
+                    continue
+                evals = run["evals_used"].to_numpy()
+                lam = run["lambda"].to_numpy()
+                starts = [0, *evals[:-1][np.diff(lam) != 0]]
+                for start, stage_lam in zip(starts, [lam[0], *lam[1:][np.diff(lam) != 0]],
+                                            strict=True):
+                    if start > 0:
+                        ax.axvline(start, color=ALGORITHM_COLORS[algorithm],
+                                   linestyle="--", linewidth=1.2)
+                    ax.annotate(f"λ={stage_lam}", xy=(start, 1), xycoords=("data", "axes fraction"),
+                                xytext=(4, -4), textcoords="offset points", va="top",
+                                fontsize=10, color=ALGORITHM_COLORS[algorithm])
+            ax.set_title(f"Seed {seed}", fontsize=12, loc="left")
+            ax.set_ylabel("Generation best (m)")
+        axes[-1, 0].set_xlabel("Fitness evaluations")
+        legend_below(axes[-1, 0], ncol=2)
+        decorate(
+            fig,
+            f"Best Fitness per Generation on {body.capitalize()}",
+            subtitle="Distance to target of each generation's best controller (lower is "
+            "better); dashed lines = IPOP restarts with doubled λ",
+            has_legend=True,
+        )
+        self._save(fig, body, "generation_best")
 
     def plot_population_size(self, body: str) -> None:
         """IPOP population size (lambda) over evaluations; each step is a restart."""
@@ -324,6 +432,8 @@ def main() -> None:
     plotter = Plotter(args.experiment)
     for body in plotter.summary["body"].unique().sort():
         plotter.plot_convergence(body)
+        plotter.plot_convergence_per_seed(body)
+        plotter.plot_generation_best(body)
         plotter.plot_population_size(body)
         plotter.plot_sigma_evolution(body)
         plotter.plot_final_distance(body)
