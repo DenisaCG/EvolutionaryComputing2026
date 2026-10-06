@@ -163,47 +163,57 @@ class Plotter:
         self._save(fig, body, "convergence")
 
     def plot_convergence_per_seed(self, body: str) -> None:
-        """Best-so-far distance of every run in one plot (color = algorithm,
-        line style = seed), with IPOP's restarts marked and the per-generation
-        best of IPOP's current stage shown faintly, so restarted stages that
-        never beat the best-so-far are still visible.
+        """Best-so-far distance of every run, one panel per seed (color =
+        algorithm), with IPOP's restarts marked and the per-generation best of
+        IPOP's current stage shown faintly, so restarted stages that never
+        beat the best-so-far are still visible.
         """
         body_df = self.generations.filter(pl.col("body") == body)
         d0 = self._initial_distance(body)
-        seed_styles = ["-", "--", ":", "-.", (0, (5, 1, 1, 1))]
-        widths = {"cma_es": 3.2, "random_search": 1.8, "ipop_cma_es": 1.6}
+        seeds = body_df["seed"].unique().sort()
+        widths = {"cma_es": 2.6, "random_search": 1.8, "ipop_cma_es": 1.6}
 
-        fig, ax = plt.subplots(figsize=(10, 6))
-        for algorithm in self._algorithms(body_df):
-            color = ALGORITHM_COLORS[algorithm]
-            seeds = body_df.filter(pl.col("algorithm") == algorithm)["seed"].unique().sort()
-            for i, seed in enumerate(seeds):
+        fig, axes = plt.subplots(len(seeds), 1, figsize=(10, 2.8 * len(seeds) + 1.5),
+                                 squeeze=False, sharex=True, sharey=True)
+        for ax, seed in zip(axes[:, 0], seeds, strict=True):
+            for algorithm in self._algorithms(body_df):
                 run = body_df.filter(
                     (pl.col("algorithm") == algorithm) & (pl.col("seed") == seed)
                 ).sort("evals_used")
+                if run.is_empty():
+                    continue
+                color = ALGORITHM_COLORS[algorithm]
                 evals = run["evals_used"].to_numpy()
-                style = seed_styles[i % len(seed_styles)]
                 ax.step(evals, run["best_so_far"].to_numpy() + d0, where="post",
-                        color=color, linestyle=style, linewidth=widths[algorithm],
-                        label=f"{ALGORITHM_LABELS[algorithm]}, seed {seed}",
+                        color=color, linestyle=ALGORITHM_LINESTYLES[algorithm],
+                        linewidth=widths[algorithm], label=ALGORITHM_LABELS[algorithm],
                         zorder=2 if algorithm == "cma_es" else 3)
                 if algorithm != "ipop_cma_es":
                     continue
                 ax.plot(evals, run["best_fitness"].to_numpy() + d0, color=color,
-                        linestyle=style, linewidth=0.7, alpha=0.35, zorder=1)
+                        linewidth=0.7, alpha=0.35, zorder=1,
+                        label="IPOP-CMA-ES, generation best")
                 lam = run["lambda"].to_numpy()
-                for e in evals[:-1][np.diff(lam) != 0]:
-                    ax.axvline(e, color=color, linestyle=style, linewidth=1, alpha=0.6)
-
-        ax.axhline(d0, color="grey", linestyle=":", linewidth=1)
-        ax.set_xlabel("Fitness evaluations")
-        ax.set_ylabel("Distance to target (m, lower is better)")
-        legend_below(ax, ncol=3)
+                starts = [0, *evals[:-1][np.diff(lam) != 0]]
+                for start, stage_lam in zip(starts, [lam[0], *lam[1:][np.diff(lam) != 0]],
+                                            strict=True):
+                    if start > 0:
+                        ax.axvline(start, color=color, linestyle=":", linewidth=1, alpha=0.7)
+                    ax.annotate(f"λ={stage_lam}", xy=(start, 1), xycoords=("data", "axes fraction"),
+                                xytext=(4, -4), textcoords="offset points", va="top",
+                                fontsize=10, color=color, zorder=4,
+                                bbox={"facecolor": "white", "edgecolor": "none", "pad": 1})
+            ax.axhline(d0, color="grey", linestyle=":", linewidth=1)
+            ax.set_title(f"Seed {seed}", fontsize=12, loc="left")
+            ax.set_ylabel("Distance (m)")
+        axes[-1, 0].set_xlabel("Fitness evaluations")
+        legend_below(axes[0, 0], ncol=4)
         decorate(
             fig,
             f"Convergence per Seed on {body.capitalize()}",
-            subtitle="Thick lines: best-so-far per run (line style = seed). Vertical lines: "
-            "IPOP restarts. Faint purple: best of each IPOP generation (current stage).",
+            subtitle="Best-so-far distance to target per run (lower is better). Dotted "
+            "vertical lines: IPOP restarts with doubled λ. Faint purple: best of each IPOP generation "
+            "(current stage). Grey dotted line: starting distance.",
         )
         self._save(fig, body, "convergence_per_seed")
 
