@@ -1,0 +1,92 @@
+{
+  "algorithm": "ipop_cma_es",
+  "timestamp_utc": "2026-10-06T18:06:06Z",
+  "wall_clock_duration_s": 64179.73908208287,
+  "termination_reason": "insufficient_budget_for_population",
+  "total_evals": 19969,
+  "config": {
+    "body": "turtle",
+    "seed": 1,
+    "hidden_size": 6,
+    "clock_hz": 1.3,
+    "sim_duration": 30.0,
+    "spawn_pos": [
+      -0.8,
+      0.0,
+      0.0
+    ],
+    "target_position": [
+      5.0,
+      0.0,
+      0.5
+    ],
+    "fall_height_threshold": 0.05,
+    "terrain_seed": 0,
+    "lambda_": null,
+    "budget": 20000,
+    "sigma0": 0.5,
+    "stagnation_c": 4.5,
+    "stagnation_tol": 0.01,
+    "max_lambda": 200,
+    "output_root": "__data__/ipop_ldef_b20000_t30"
+  },
+  "resolved_params": {
+    "initial_lambda": 19,
+    "final_lambda": 152,
+    "max_lambda": 200
+  },
+  "hardware": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "logical_cpu_count": 8,
+    "python_implementation": "CPython",
+    "cpu_model": "Apple M2",
+    "machine_model": "Mac14,7",
+    "machine_name": "MacBook Pro",
+    "total_ram": "24 GB",
+    "total_cores": 8,
+    "performance_cores": 4,
+    "efficiency_cores": 4
+  },
+  "software": {
+    "python": "3.12.9",
+    "numpy": "2.3.3",
+    "mujoco": "3.8.0"
+  },
+  "git_commit": "bc21d1460a43033b8ec39f1c45b7a6ce9e3f5975",
+  "git_uncommitted_changes": false,
+  "restart_history": [
+    {
+      "restart": 1,
+      "generation": 291,
+      "evals_used": 5529,
+      "reason": "stagnation",
+      "old_lambda": 19,
+      "new_lambda": 38
+    },
+    {
+      "restart": 2,
+      "generation": 365,
+      "evals_used": 8341,
+      "reason": "stagnation",
+      "old_lambda": 38,
+      "new_lambda": 76
+    },
+    {
+      "restart": 3,
+      "generation": 424,
+      "evals_used": 12825,
+      "reason": "stagnation",
+      "old_lambda": 76,
+      "new_lambda": 152
+    },
+    {
+      "restart": 4,
+      "generation": 456,
+      "evals_used": 17689,
+      "reason": "stagnation",
+      "old_lambda": 152,
+      "new_lambda": 152
+    }
+  ]
+}
