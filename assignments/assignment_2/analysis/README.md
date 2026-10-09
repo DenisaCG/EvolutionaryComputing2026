@@ -54,6 +54,8 @@ from anywhere. Quote paths containing spaces. On macOS, the script switches
 to `mjpython` automatically and supplies uv's Python library search path.
 The simulation starts automatically, stops at the saved episode duration,
 and leaves the viewer open until you close it.
+Pass `--duration 60` to replay for 60 simulated seconds instead of the saved
+episode duration. This does not change the saved run or its fitness.
 
 `results/turtle/` and `results/iguana/` hold the earlier CMA-ES vs. random
 search plots (old fitness/controller, 10 s episodes, lambda = 25); they are

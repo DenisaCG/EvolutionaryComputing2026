@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import fields
 import json
+import math
 import os
 from pathlib import Path
 import sys
@@ -14,7 +15,11 @@ import time
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", type=Path, help="Run folder or best_genome.json path")
+    parser.add_argument("--duration", type=float,
+                        help="Simulation seconds (default: saved episode duration)")
     args = parser.parse_args()
+    if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
+        parser.error("--duration must be a positive finite number")
     path = args.path.expanduser().resolve()
     genome_path = path / "best_genome.json" if path.is_dir() else path
     manifest_path = genome_path.parent / "manifest.json"
@@ -42,7 +47,7 @@ def main() -> None:
             [library_dir, previous] if previous else [library_dir]
         )
         os.execve(sys.executable, [sys.executable, str(launcher),
-                  str(Path(__file__).resolve()), str(genome_path)], env)
+                  str(Path(__file__).resolve()), *sys.argv[1:]], env)
 
     import mujoco as mj
     import numpy as np
@@ -58,6 +63,7 @@ def main() -> None:
         key: value for key, value in settings.items()
         if key in config_fields and key != "output_root"
     })
+    duration = config.sim_duration if args.duration is None else args.duration
     mj.set_mjcb_control(None)
     world = build_world(config.terrain_seed)
     robot = build_robot(config.body)
@@ -80,14 +86,14 @@ def main() -> None:
         )
 
     print(f"Replaying {genome_path}")
-    print(f"Duration: {config.sim_duration:g} seconds. Close the viewer to exit.")
+    print(f"Duration: {duration:g} seconds. Close the viewer to exit.")
     mj.set_mjcb_control(control)
     try:
         with viewer.launch_passive(model, data) as window:
             while window.is_running():
                 started = time.perf_counter()
                 with window.lock():
-                    if data.time < config.sim_duration:
+                    if data.time < duration:
                         mj.mj_step(model, data)
                 window.sync()
                 time.sleep(max(0, model.opt.timestep -
