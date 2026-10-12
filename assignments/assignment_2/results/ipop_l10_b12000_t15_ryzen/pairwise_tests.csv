@@ -1,0 +1,7 @@
+body,algorithm_a,algorithm_b,n_a,n_b,U,p_value
+iguana,cma_es,ipop_cma_es,5,5,21.0,0.09523809523809523
+iguana,cma_es,random_search,5,5,0.0,0.007936507936507936
+iguana,ipop_cma_es,random_search,5,5,0.0,0.007936507936507936
+turtle,cma_es,ipop_cma_es,5,5,19.0,0.2222222222222222
+turtle,cma_es,random_search,5,5,0.0,0.007936507936507936
+turtle,ipop_cma_es,random_search,5,5,0.0,0.007936507936507936
