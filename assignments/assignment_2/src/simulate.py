@@ -9,6 +9,7 @@ so `simple_runner` itself is used unmodified.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 import mujoco as mj
@@ -27,7 +28,13 @@ ANGLED_CAMERA_NAME = "pretty-cam"
 
 from bodies import build_robot, build_world
 from config import ExperimentConfig
-from controller import controller_inputs, genotype_length, nn_controller, unflatten
+from controller import (
+    FastController,
+    controller_inputs,
+    genotype_length,
+    nn_controller,
+    unflatten,
+)
 
 
 @dataclass(frozen=True)
@@ -97,26 +104,21 @@ def run_episode(
     weights = unflatten(flat_weights, input_size, config.hidden_size, output_size)
 
     initial_position = np.asarray(data.qpos[0:3]).copy()
-    tracker = {
-        "last_position": initial_position.copy(),
-        "total_path_length": 0.0,
-        "min_core_height": float(initial_position[2]),
-    }
+    # Scalars in a closure-mutable list rather than a dict of arrays: this
+    # callback runs every physics step, so per-step allocations add up.
+    # [last_x, last_y, last_z, total_path_length, min_core_height]
+    tracker = [*map(float, initial_position), 0.0, float(initial_position[2])]
+    controller = FastController(weights, target_xy, config.clock_hz)
 
     def control_callback(m: mj.MjModel, d: mj.MjData) -> None:
-        actions = nn_controller(
-            controller_inputs(d, target_xy, config.clock_hz), weights
-        )
-        d.ctrl[:] = actions
+        controller(d, d.ctrl)
 
-        current_position = np.asarray(d.qpos[0:3]).copy()
-        tracker["total_path_length"] += float(
-            np.linalg.norm(current_position - tracker["last_position"])
-        )
-        tracker["last_position"] = current_position
-        tracker["min_core_height"] = min(
-            tracker["min_core_height"], float(current_position[2])
-        )
+        x, y, z = float(d.qpos[0]), float(d.qpos[1]), float(d.qpos[2])
+        dx, dy, dz = x - tracker[0], y - tracker[1], z - tracker[2]
+        tracker[3] += math.sqrt(dx * dx + dy * dy + dz * dz)
+        tracker[0], tracker[1], tracker[2] = x, y, z
+        if z < tracker[4]:
+            tracker[4] = z
 
     mj.set_mjcb_control(control_callback)
     simple_runner(model, data, duration=config.sim_duration)
@@ -127,8 +129,8 @@ def run_episode(
     return EpisodeMetrics(
         initial_position=initial_position,
         final_position=final_position,
-        total_path_length=tracker["total_path_length"],
-        min_core_height=tracker["min_core_height"],
+        total_path_length=tracker[3],
+        min_core_height=tracker[4],
     )
 
 
